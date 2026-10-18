@@ -28,8 +28,18 @@ ollama pull llama3.2:3b
 uv run agentic-profiling configs/ollama.yaml tasks/smoke.yaml
 ```
 
-Verificar a GPU: `nvidia-smi`. Com >= 24 GB dá para correr vLLM com modelos 7-8B nesta
-máquina; com menos, usar GPU alugada (RunPod / Vast.ai) para as Semanas 4-5.
+### Hardware disponível e onde corre cada coisa
+
+Máquina Linux: 24 GB RAM, GTX 1650 (4 GB VRAM, Turing sm_75, sem bf16), SSD 256 GB.
+
+| Trabalho | Onde |
+|---|---|
+| Semanas 1-3 (agente, 100 tarefas, análise) com Ollama | Linux local |
+| `llama3.2:3b` (cabe na GPU) / `qwen2.5:7b` (parte em RAM, mais lento) | Linux local |
+| Ensaio de vLLM com Qwen2.5-0.5B (`--dtype half --max-model-len 4096`) | Linux local, só para testar comandos |
+| Medições vLLM/SGLang com 7-8B (Semanas 4-5) | GPU alugada 24 GB (RTX 4090/A5000, ~$0.3-0.7/h, ~15-30 h) |
+
+Disco: limpar modelos não usados (`ollama rm`, `~/.cache/huggingface`).
 
 ---
 
