@@ -1,19 +1,18 @@
-# Python (backend/)
+# Python
 __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
 .ruff_cache/
 .ipynb_checkpoints/
+*.egg-info/
 
-# Experiment output: raw traces stay local; exported results go in backend/results/
+# Experiment output: raw traces stay local; exported results go in results/ (tracked)
 traces/
 *.log
 
-# Node (frontend/); the production build goes to docs/ and IS committed (GitHub Pages)
-node_modules/
-frontend/dist/
-
-# Environment
+# Environment and editor files
 .env
 .DS_Store
+.vscode/
+.idea/

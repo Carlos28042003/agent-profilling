@@ -1,9 +1,11 @@
-"""Local web interface: serves the results page (docs/) and runs the agent live.
+"""API for the web UI (separate frontend repository): runs the agent live.
 
-    agentic-ui            # opens http://localhost:8000
+    agentic-ui                         # API + the built frontend, on http://localhost:8000
+    agentic-ui --site PATH             # serve the frontend build from another folder
+    agentic-ui --no-browser            # API only use, e.g. with the frontend's `npm run dev`
 
-The page's "Ask" tab only works while this API is running; on GitHub Pages
-(static) the page shows the results only.
+By default the built site is taken from the frontend repository next to this one
+(../frontend/docs). Without it, only the API is served.
 """
 
 import argparse
@@ -24,9 +26,9 @@ from fastapi.staticfiles import StaticFiles
 from . import llm_from_config, run_meta
 from .agent import run_task
 
-ROOT = Path(__file__).resolve().parents[2]  # backend/
+ROOT = Path(__file__).resolve().parents[2]  # repository root
 CONFIGS = ROOT / "configs"
-DOCS = ROOT.parent / "docs"  # the built frontend (cd frontend && npm run build)
+DEFAULT_SITE = ROOT.parent / "frontend" / "docs"  # the frontend repository, next to this one: npm run build
 ASK_TRACES = ROOT / "traces" / "ask"
 
 app = FastAPI(title="agentic-profiling")
@@ -84,12 +86,18 @@ def ask(question: str = Query(..., min_length=3, max_length=500),
                              headers={"Cache-Control": "no-cache"})
 
 
-if (DOCS / "index.html").exists():
-    app.mount("/", StaticFiles(directory=DOCS, html=True), name="docs")
-else:
+def mount_site(site: Path) -> bool:
+    """Serve the built frontend at /, or a short help message if it is missing."""
+    if (site / "index.html").exists():
+        app.mount("/", StaticFiles(directory=site, html=True), name="site")
+        return True
+
     @app.get("/")
     def no_frontend() -> dict:
-        return {"error": "frontend not built", "fix": "cd frontend && npm install && npm run build"}
+        return {"api": "running", "site": f"not found at {site}",
+                "fix": "build the frontend repository (npm install && npm run build) or pass --site PATH"}
+
+    return False
 
 
 def main() -> None:
@@ -97,8 +105,13 @@ def main() -> None:
 
     p = argparse.ArgumentParser(prog="agentic-ui")
     p.add_argument("--port", type=int, default=8000)
+    p.add_argument("--site", type=Path, default=DEFAULT_SITE, help="folder with the built frontend (index.html)")
     p.add_argument("--no-browser", action="store_true")
     args = p.parse_args()
+    if mount_site(args.site.resolve()):
+        print(f"Serving the frontend from {args.site.resolve()}")
+    else:
+        print(f"Frontend build not found at {args.site.resolve()}: serving the API only (/api/...)")
     if not args.no_browser:
         threading.Timer(1.5, webbrowser.open, [f"http://localhost:{args.port}"]).start()
     uvicorn.run(app, host="127.0.0.1", port=args.port)

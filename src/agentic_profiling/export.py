@@ -1,10 +1,10 @@
-"""Export an experiment to results/<name>.json and rebuild the frontend's data file.
+"""Export an experiment to results/<name>.json and rebuild results/data.json.
 
     agentic-export week1 traces/week1/* --title "..." --description "..."
-    agentic-export --page-only        # only rebuild frontend/src/data.json from results/
+    agentic-export --page-only        # only rebuild results/data.json from results/*.json
 
-The React frontend imports frontend/src/data.json (all experiments in results/).
-Rebuild the site afterwards: cd ../frontend && npm run build.
+results/data.json holds every experiment and is what the frontend repository shows:
+there, `npm run sync-data` copies it and `npm run build` rebuilds the site.
 """
 
 import argparse
@@ -20,9 +20,9 @@ from .analyze import stats as workload_stats
 from .compare import compare
 from .summarize import load_steps, summarize
 
-ROOT = Path(__file__).resolve().parents[2]  # backend/
+ROOT = Path(__file__).resolve().parents[2]  # repository root
 RESULTS = ROOT / "results"
-FRONTEND_DATA = ROOT.parent / "frontend" / "src" / "data.json"
+SITE_DATA = RESULTS / "data.json"  # all experiments, for the frontend repository
 
 STEP_FIELDS = ["index", "tool", "llm_ttft_s", "llm_generation_s", "tool_s",
                "prompt_tokens", "completion_tokens", "cached_tokens", "truncated"]
@@ -105,10 +105,10 @@ def export(name: str, run_dirs: list[Path], title: str, description: str, exampl
 
 
 def update_page() -> int:
-    experiments = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(RESULTS.glob("*.json"))]
+    experiments = [json.loads(p.read_text(encoding="utf-8"))
+                   for p in sorted(RESULTS.glob("*.json")) if p != SITE_DATA]
     data = {"updated": date.today().isoformat(), "experiments": experiments}
-    FRONTEND_DATA.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n",
-                             encoding="utf-8", newline="\n")
+    SITE_DATA.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     return len(experiments)
 
 
@@ -121,7 +121,7 @@ def main() -> None:
     p.add_argument("--description", default="")
     p.add_argument("--example", help="task for the step chart, as run/task_id")
     p.add_argument("--compare", action="store_true", help="also export the run comparison (Weeks 4-5)")
-    p.add_argument("--page-only", action="store_true", help="only rebuild frontend/src/data.json")
+    p.add_argument("--page-only", action="store_true", help="only rebuild results/data.json")
     args = p.parse_args()
 
     if not args.page_only:
@@ -131,5 +131,5 @@ def main() -> None:
                      args.compare)
         print(f"Exported: {out.relative_to(ROOT)}")
     n = update_page()
-    print(f"Frontend data updated: frontend/src/data.json ({n} experiments). "
-          "Rebuild the site: cd ../frontend && npm run build")
+    print(f"Site data updated: results/data.json ({n} experiments). "
+          "In the frontend repository: npm run sync-data && npm run build")

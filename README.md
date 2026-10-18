@@ -1,4 +1,4 @@
-# agentic-profiling
+# agentic-profiling — backend
 
 **Where does the time go when an LLM agent runs, and how much of its work is repeated?**
 
@@ -9,31 +9,26 @@ tokens, and how much of each prompt is a prefix that the model has already proce
 These traces are then used to evaluate serving-side optimizations such as **prefix
 caching**, under single-agent and concurrent multi-agent load.
 
+This repository is the **backend**: the agent, its tools, the instrumented LLM client,
+the benchmark runner, the analysis and the API server. The results page and the live
+"Ask the agent" UI are a separate React + Tailwind project:
+**[frontend repository](https://github.com/Carlos28042003/agentic-profiling-frontend)**.
+
 > **Status:** Week 1 complete; Week 2 benchmarks (100 HotpotQA + 100 GSM8K tasks) running;
-> analysis, serving comparison and web UI built. See the [roadmap](#roadmap).
-
-The repository has two parts:
-
-| Part | What it is | Tech |
-|---|---|---|
-| [`backend/`](backend/) | The agent and everything that runs the LLM: tools, instrumented client, benchmark runner, analysis, API server | Python 3.12, uv, FastAPI, Ollama / llama.cpp / vLLM |
-| [`frontend/`](frontend/) | Results page and live "Ask the agent" UI | React 19, Tailwind CSS 4, Vite |
-
-The frontend is built into [`docs/`](docs/), which GitHub Pages publishes and the backend
-also serves locally.
+> analysis and serving-comparison tooling built. See [STATUS.md](STATUS.md).
 
 ---
 
-## Table of contents
+## Contents
 
 - [Motivation](#motivation)
 - [Research questions](#research-questions)
 - [Preliminary observation](#preliminary-observation)
 - [How it works](#how-it-works)
-- [Repository layout](#repository-layout)
 - [Quick start](#quick-start)
-- [Backend commands](#backend-commands)
-- [Frontend](#frontend)
+- [Commands](#commands)
+- [Working with the frontend](#working-with-the-frontend)
+- [Repository layout](#repository-layout)
 - [Configuration](#configuration)
 - [Task files](#task-files)
 - [Trace format](#trace-format)
@@ -77,7 +72,7 @@ latency, and what happens when many agents share one GPU.
 
 A sanity-check run (local Ollama, `llama3.2:3b`, GTX 1650) on one smoke-test task
 (`combo_1`: *"How many years passed between the founding of Google and the founding
-of Microsoft?"*, 6 steps) already shows the pattern this project studies:
+of Microsoft?"*, 6 steps):
 
 | Step | TTFT (s) | Decode (s) | Tool (s) | Prompt tokens | Cached prompt tokens |
 |-----:|---------:|-----------:|---------:|--------------:|---------------------:|
@@ -88,10 +83,10 @@ of Microsoft?"*, 6 steps) already shows the pattern this project studies:
 | 4 | 4.36 | 1.53 | 0.00 | 1,635 | 1,322 |
 | 5 | 2.42 | 1.53 | 0.00 | 1,691 | 1,676 |
 
-The prompt grows by roughly 350 tokens per step, and from step 1 onward more than
-90% of each prompt is the previous step's prompt. Across the Week 1 smoke tests,
-prefill (TTFT) takes about 60% of task time and decode about 25%. These are functional
-checks on a small model, not final results.
+The prompt grows by roughly 350 tokens per step, and from step 1 onward more than 90% of
+each prompt is the previous step's prompt. Across the Week 1 smoke tests, prefill (TTFT)
+takes about 60% of task time and decode about 25%. These are functional checks on a small
+model, not final results.
 
 ## How it works
 
@@ -106,72 +101,28 @@ flowchart LR
     T -. per-step record .-> R
 ```
 
-- **Hand-written ReAct loop** (`backend/src/agentic_profiling/agent.py`). No agent
-  framework, so that every millisecond and every token can be attributed.
-- **Append-only history.** Messages are only ever appended, never rewritten, so the
-  prompt of step *N* is an exact prefix of the prompt of step *N+1*: the property that
-  prefix caching exploits and that the traces measure.
-- **Instrumented LLM client** (`llm.py`). OpenAI-compatible Chat Completions API with
-  streaming: TTFT is the arrival of the first content chunk; token usage (including
-  cached tokens) comes from the final chunk. Works with Ollama, llama.cpp, vLLM and
-  SGLang by changing `base_url`.
+- **Hand-written ReAct loop** (`src/agentic_profiling/agent.py`). No agent framework, so
+  every millisecond and every token can be attributed.
+- **Append-only history.** The prompt of step *N* is an exact prefix of the prompt of step
+  *N+1*: the property prefix caching exploits and the traces measure.
+- **Instrumented LLM client** (`llm.py`). OpenAI-compatible Chat Completions with streaming:
+  TTFT is the first content chunk; token usage (including cached tokens) comes from the
+  final chunk. Works with Ollama, llama.cpp, vLLM and SGLang by changing `base_url`.
 - **Stop sequences** (`Observation:`) prevent the model from inventing tool results.
-
-## Repository layout
-
-```
-agentic-profiling/
-├── backend/                     Python: agent, LLM client, experiments, API server
-│   ├── src/agentic_profiling/   agent.py, tools.py, llm.py, metrics.py, server.py, ...
-│   ├── configs/                 server + model + sampling parameters (Ollama, llama.cpp)
-│   ├── tasks/                   smoke.yaml, hotpotqa_100.yaml, gsm8k_100.yaml
-│   ├── results/                 exported experiments (JSON) + figures, tracked by git
-│   ├── traces/                  raw traces, local only (git-ignored)
-│   ├── scripts/                 serve_llamacpp.ps1
-│   ├── tests/                   pytest suite
-│   ├── requirements/            readable dependency lists (+ GPU servers)
-│   └── pyproject.toml, uv.lock
-├── frontend/                    React + Tailwind CSS (Vite)
-│   ├── src/App.jsx              tabs: Results, Ask the agent, About
-│   ├── src/pages/               Results.jsx, Ask.jsx, About.jsx
-│   ├── src/components/          charts, tables, UI pieces
-│   ├── src/data.json            experiment data, generated by `agentic-export`
-│   └── package.json, vite.config.js
-├── docs/                        built frontend (GitHub Pages), from `npm run build`
-├── README.md                    this file
-└── STATUS.md                    progress, results so far, known issues, next steps
-```
 
 ## Quick start
 
-Requirements: [uv](https://docs.astral.sh/uv/), [Node.js](https://nodejs.org/) 20+, and
-[Ollama](https://ollama.com).
+Requirements: [uv](https://docs.astral.sh/uv/) and [Ollama](https://ollama.com).
 
 ```bash
-git clone https://github.com/Carlos28042003/agent-profilling.git
-cd agent-profilling
-
-# 1. Backend
-cd backend
-uv sync
+uv sync                                   # Python 3.12 + exact versions from uv.lock
 ollama pull llama3.2:3b
 ollama create llama3.2:3b-ctx8k -f configs/ollama/llama3.2-ctx8k.Modelfile
-uv run pytest
-uv run agentic-profiling configs/ollama.yaml tasks/smoke.yaml   # 5 smoke tasks
-
-# 2. Frontend (once, and after every export)
-cd ../frontend
-npm install
-npm run build                                                   # -> ../docs
-
-# 3. Web UI with the live agent
-cd ../backend
-uv run agentic-ui                                               # http://localhost:8000
+uv run pytest                             # automated tests
+uv run agentic-profiling configs/ollama.yaml tasks/smoke.yaml    # 5 smoke tasks
 ```
 
-## Backend commands
-
-Run inside `backend/`:
+## Commands
 
 | Command | What it does |
 |---|---|
@@ -180,8 +131,8 @@ Run inside `backend/`:
 | `uv run agentic-summary <trace dirs...>` | Per-run table: accuracy, steps, time split, prefix reuse, truncated steps |
 | `uv run agentic-analyze <name> <trace dirs...>` | Characterization figures + `stats.json` in `results/figures/<name>/` |
 | `uv run agentic-compare <name> <trace dirs...>` | Serving comparison: TTFT, latency, throughput, prefill tokens, cache hit |
-| `uv run agentic-export <name> <trace dirs...> --title ... --description ...` | Save `results/<name>.json` and rebuild `../frontend/src/data.json` |
-| `uv run agentic-ui` | API server + built site on http://localhost:8000 |
+| `uv run agentic-export <name> <trace dirs...> --title ... --description ...` | Save `results/<name>.json` and rebuild `results/data.json` (for the frontend) |
+| `uv run agentic-ui [--site PATH] [--no-browser]` | API server (and the built frontend) on http://localhost:8000 |
 
 Example output (a 6-task GSM8K pilot run):
 
@@ -192,39 +143,50 @@ Example output (a 6-task GSM8K pilot run):
 5/6 correct — 6 tasks in 87s (4.1 tasks/min) — traces in traces/pilot/gsm8k
 ```
 
-## Frontend
+## Working with the frontend
 
-A React 19 + Tailwind CSS 4 app built with Vite, with three tabs:
+The two repositories are meant to sit side by side in one folder:
 
-- **Results:** key numbers, prompt-vs-cache chart for one task, time split (prefill /
-  decode / tools / overhead), context growth, latency CDF, serving comparison and all
-  runs. Everything comes from `src/data.json`.
-- **Ask the agent** (needs the local backend): type any question, pick a model and watch
-  the agent work live, step by step, with TTFT, tokens and cache hit per step.
-- **About:** what the project measures and how to run it.
-
-```bash
-cd frontend
-npm install
-npm run dev        # development server with hot reload; /api is proxied to the backend on :8000
-npm run build      # production build into ../docs
+```
+agentic-profiling/
+├── backend/     this repository
+└── frontend/    the React + Tailwind repository
 ```
 
-**Publishing:** `docs/` is committed. On GitHub: Settings → Pages → branch `main`,
-folder `/docs`. On GitHub Pages the Ask tab shows "local only", because it needs Python
-and Ollama.
+- **Data:** `agentic-export` writes `results/data.json`; in the frontend,
+  `npm run sync-data` copies it and `npm run build` rebuilds the site.
+- **Live agent:** `uv run agentic-ui` serves the API (`/api/health`, `/api/ask` with
+  Server-Sent Events) and, if `../frontend/docs` exists, the built site at `/`. Use
+  `--site PATH` for another location. For frontend development, run
+  `uv run agentic-ui --no-browser` here and `npm run dev` in the frontend.
 
-**Adding results to the page:**
+## Repository layout
 
-```bash
-cd backend
-uv run agentic-export <name> traces/<experiment>/* --title "Short title" --description "One paragraph"
-cd ../frontend && npm run build
+```
+src/agentic_profiling/
+  agent.py       hand-written ReAct loop, per-step Step/Trace records
+  tools.py       search + lookup (Wikipedia), calculator, python
+  llm.py         streaming OpenAI-compatible client (TTFT, decode, tokens, cache)
+  metrics.py     HotpotQA exact match / F1, numeric match
+  benchmarks.py  agentic-tasks
+  __init__.py    agentic-profiling (runner)
+  summarize.py   agentic-summary
+  analyze.py     agentic-analyze
+  compare.py     agentic-compare
+  export.py      agentic-export
+  server.py      agentic-ui (FastAPI)
+configs/         server + model + sampling parameters (Ollama, llama.cpp)
+tasks/           smoke.yaml, hotpotqa_100.yaml, gsm8k_100.yaml
+scripts/         serve_llamacpp.ps1 (llama.cpp server)
+requirements/    readable dependency lists; gpu.txt / sglang.txt for Linux GPU servers
+results/         exported experiments (JSON), data.json for the frontend, figures — tracked
+traces/          raw traces — local only (git-ignored)
+tests/           pytest suite
 ```
 
 ## Configuration
 
-`backend/configs/*.yaml`:
+`configs/*.yaml`:
 
 | Key | Default | Meaning |
 |-----|---------|---------|
@@ -240,7 +202,7 @@ cd ../frontend && npm run build
 
 ## Task files
 
-`backend/tasks/*.yaml` is a list of tasks:
+`tasks/*.yaml` is a list of tasks:
 
 ```yaml
 - id: hotpot_0115
@@ -271,18 +233,16 @@ One JSON file per task. Per-step fields:
 | `output`, `observation` | Raw model output and tool result |
 
 Each trace also stores the outcome (`answer`, `correct`, `em`, `f1`, `stop_reason`), the
-full conversation (`messages`, for offline re-tokenization) and the run metadata (config,
-git commit, versions).
+full conversation (`messages`) and the run metadata (config, git commit, versions).
 
 ## Running against llama.cpp / vLLM / SGLang
 
 The agent code does not change: only `base_url` and `model` in the config.
 
 **llama.cpp (Windows or Linux, any NVIDIA GPU).** Reuses Ollama's GGUF file; prompt caching
-can be switched off per request, which makes a clean on/off comparison:
+can be switched off per request, which gives a clean on/off comparison:
 
 ```powershell
-cd backend
 ollama stop llama3.2:3b-ctx8k            # free the GPU
 .\scripts\serve_llamacpp.ps1             # or -Parallel 4 for 4 concurrent agents
 uv run agentic-profiling configs/llamacpp.yaml         tasks/gsm8k_100.yaml --out traces/week4/cache-on
@@ -291,7 +251,7 @@ uv run agentic-compare week4 traces/week4/cache-on traces/week4/cache-off
 ```
 
 **vLLM / SGLang (Linux, 24 GB GPU for 7-8B models).** Install each in its own virtual
-environment (see `backend/requirements/gpu.txt` and `sglang.txt`):
+environment (see `requirements/gpu.txt` and `sglang.txt`):
 
 ```bash
 vllm serve Qwen/Qwen2.5-7B-Instruct --port 8000                             # prefix caching on
@@ -308,14 +268,13 @@ vllm serve Qwen/Qwen2.5-7B-Instruct --port 8000 --no-enable-prefix-caching  # of
 | `python` | Python code | Separate interpreter (`python -I -X utf8`) in a temporary directory, 10 s timeout |
 
 HotpotQA tasks get `search`, `lookup` and `calculator`; GSM8K tasks get `calculator` and
-`python`. Tool errors are returned to the agent as observations. Tasks that hit network
+`python`. Tool errors are returned to the agent as observations; tasks that hit network
 errors are not saved, so a resumed run retries them.
 
 ## Reproducibility
 
-- Exact Python dependencies in `backend/uv.lock`; exact JavaScript dependencies in
-  `frontend/package-lock.json`.
-- `temperature: 0` and a fixed `seed`; task files built with a fixed seed.
+- Exact dependencies in `uv.lock`; `temperature: 0` and a fixed `seed`; task files built
+  with a fixed seed.
 - Every run stores its config, git commit, Python version, platform and client version.
 - Full conversations are stored in each trace, so token-level metrics can be recomputed.
 
@@ -323,7 +282,7 @@ errors are not saved, so a resumed run retries them.
 
 | Stage | Hardware |
 |-------|----------|
-| Development, benchmarks, characterization, llama.cpp experiments | Windows/Linux PC, 24 GB RAM, GTX 1650 (4 GB) |
+| Development, benchmarks, characterization, llama.cpp experiments | PC, 24 GB RAM, GTX 1650 (4 GB) |
 | vLLM / SGLang measurements with 7-8B models (optional) | Rented 24 GB GPU (RTX 4090 / A5000 class) |
 
 ## Roadmap
@@ -333,7 +292,7 @@ errors are not saved, so a resumed run retries them.
 - [ ] **Week 3:** Characterization: time breakdown, context growth, prefix reuse, latency CDF (tooling done)
 - [ ] **Week 4:** Prefix caching on vs. off (llama.cpp; vLLM optional) (tooling done)
 - [ ] **Week 5:** Concurrent agents and context truncation vs. cache reuse (tooling done)
-- [ ] **Week 6:** 4-page report; README and results page with final numbers (frontend done)
+- [ ] **Week 6:** 4-page report; final numbers here and on the results page
 
 ## Known limitations
 
