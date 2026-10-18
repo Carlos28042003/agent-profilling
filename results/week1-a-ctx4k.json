@@ -1,0 +1,250 @@
+{
+  "id": "week1-a-ctx4k",
+  "title": "Week 1 · 4k context (truncation)",
+  "description": "Smoke test, 5 tasks × 3 runs × 2 models, Ollama on a GTX 1650 (4 GB), default 4096-token context. In code_1 the history outgrew the context at step 5: Ollama silently cut the start of the conversation, cached tokens fell from 3,102 to 5 and TTFT rose from 6.1 s to 26.8 s (4.4×). Accuracy here is as originally graded ('London' accepted).",
+  "exported": "2026-10-18",
+  "runs": [
+    {
+      "run": "llama-run1",
+      "model": "llama3.2:3b",
+      "accuracy": 0.6,
+      "finished": 0.8,
+      "steps_mean": 7.0,
+      "task_s_p50": 48.54,
+      "task_s_max": 315.09,
+      "llm_%": 94.71,
+      "tool_%": 5.29,
+      "overhead_%": 0.0,
+      "ttft_mean_s": 6.28,
+      "prompt_tok_max": 3768,
+      "truncated_steps": 3,
+      "prefix_reuse_%": 80.72,
+      "cached_tok_%": 64.93
+    },
+    {
+      "run": "llama-run2",
+      "model": "llama3.2:3b",
+      "accuracy": 1.0,
+      "finished": 1.0,
+      "steps_mean": 6.4,
+      "task_s_p50": 41.43,
+      "task_s_max": 44.72,
+      "llm_%": 87.04,
+      "tool_%": 12.96,
+      "overhead_%": 0.0,
+      "ttft_mean_s": 3.36,
+      "prompt_tok_max": 2098,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 81.04,
+      "cached_tok_%": 84.55
+    },
+    {
+      "run": "llama-run3",
+      "model": "llama3.2:3b",
+      "accuracy": 1.0,
+      "finished": 1.0,
+      "steps_mean": 6.2,
+      "task_s_p50": 33.04,
+      "task_s_max": 48.45,
+      "llm_%": 85.92,
+      "tool_%": 14.08,
+      "overhead_%": 0.0,
+      "ttft_mean_s": 3.4,
+      "prompt_tok_max": 2369,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 80.08,
+      "cached_tok_%": 83.62
+    },
+    {
+      "run": "qwen-run1",
+      "model": "qwen2.5:3b",
+      "accuracy": 0.6,
+      "finished": 0.8,
+      "steps_mean": 4.2,
+      "task_s_p50": 17.0,
+      "task_s_max": 151.84,
+      "llm_%": 95.28,
+      "tool_%": 4.72,
+      "overhead_%": 0.0,
+      "ttft_mean_s": 6.76,
+      "prompt_tok_max": 3984,
+      "truncated_steps": 2,
+      "prefix_reuse_%": 75.56,
+      "cached_tok_%": 62.45
+    },
+    {
+      "run": "qwen-run2",
+      "model": "qwen2.5:3b",
+      "accuracy": 0.4,
+      "finished": 0.8,
+      "steps_mean": 4.4,
+      "task_s_p50": 16.69,
+      "task_s_max": 160.1,
+      "llm_%": 90.44,
+      "tool_%": 9.56,
+      "overhead_%": 0.01,
+      "ttft_mean_s": 4.76,
+      "prompt_tok_max": 3984,
+      "truncated_steps": 2,
+      "prefix_reuse_%": 74.08,
+      "cached_tok_%": 74.65
+    },
+    {
+      "run": "qwen-run3",
+      "model": "qwen2.5:3b",
+      "accuracy": 0.4,
+      "finished": 0.8,
+      "steps_mean": 4.2,
+      "task_s_p50": 18.12,
+      "task_s_max": 55.14,
+      "llm_%": 90.84,
+      "tool_%": 9.14,
+      "overhead_%": 0.02,
+      "ttft_mean_s": 3.2,
+      "prompt_tok_max": 1467,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 76.57,
+      "cached_tok_%": 84.87
+    }
+  ],
+  "per_task": {
+    "calc_1": {
+      "llama-run1": 1,
+      "llama-run2": 1,
+      "llama-run3": 1,
+      "qwen-run1": 1,
+      "qwen-run2": 1,
+      "qwen-run3": 1
+    },
+    "code_1": {
+      "llama-run1": 0,
+      "llama-run2": 1,
+      "llama-run3": 1,
+      "qwen-run1": 0,
+      "qwen-run2": 0,
+      "qwen-run3": 0
+    },
+    "combo_1": {
+      "llama-run1": 0,
+      "llama-run2": 1,
+      "llama-run3": 1,
+      "qwen-run1": 1,
+      "qwen-run2": 0,
+      "qwen-run3": 0
+    },
+    "multihop_1": {
+      "llama-run1": 1,
+      "llama-run2": 1,
+      "llama-run3": 1,
+      "qwen-run1": 0,
+      "qwen-run2": 0,
+      "qwen-run3": 0
+    },
+    "search_1": {
+      "llama-run1": 1,
+      "llama-run2": 1,
+      "llama-run3": 1,
+      "qwen-run1": 1,
+      "qwen-run2": 1,
+      "qwen-run3": 1
+    }
+  },
+  "example": {
+    "run": "llama-run1",
+    "task_id": "code_1",
+    "question": "What is the sum of all prime numbers below 1000?",
+    "answer": null,
+    "correct": false,
+    "model": "llama3.2:3b",
+    "steps": [
+      {
+        "index": 0,
+        "tool": "search",
+        "llm_ttft_s": 2.4490783,
+        "llm_generation_s": 1.4958326,
+        "tool_s": 2.5094749,
+        "prompt_tokens": 246,
+        "completion_tokens": 50,
+        "cached_tokens": 230,
+        "truncated": false
+      },
+      {
+        "index": 1,
+        "tool": "python",
+        "llm_ttft_s": 6.3486122,
+        "llm_generation_s": 36.4753125,
+        "tool_s": 0.2578868,
+        "prompt_tokens": 560,
+        "completion_tokens": 512,
+        "cached_tokens": 292,
+        "truncated": false
+      },
+      {
+        "index": 2,
+        "tool": "python",
+        "llm_ttft_s": 5.4285713,
+        "llm_generation_s": 51.5584828,
+        "tool_s": 0.4862445,
+        "prompt_tokens": 1573,
+        "completion_tokens": 512,
+        "cached_tokens": 1071,
+        "truncated": false
+      },
+      {
+        "index": 3,
+        "tool": "python",
+        "llm_ttft_s": 5.8036986,
+        "llm_generation_s": 38.5416112,
+        "tool_s": 0.0703232,
+        "prompt_tokens": 2591,
+        "completion_tokens": 512,
+        "cached_tokens": 2084,
+        "truncated": false
+      },
+      {
+        "index": 4,
+        "tool": "python",
+        "llm_ttft_s": 6.0862965,
+        "llm_generation_s": 22.2691997,
+        "tool_s": 0.0612816,
+        "prompt_tokens": 3612,
+        "completion_tokens": 512,
+        "cached_tokens": 3102,
+        "truncated": false
+      },
+      {
+        "index": 5,
+        "tool": "python",
+        "llm_ttft_s": 26.8450597,
+        "llm_generation_s": 22.0199461,
+        "tool_s": 0.0608355,
+        "prompt_tokens": 3768,
+        "completion_tokens": 512,
+        "cached_tokens": 5,
+        "truncated": true
+      },
+      {
+        "index": 6,
+        "tool": "python",
+        "llm_ttft_s": 26.8042242,
+        "llm_generation_s": 16.7984793,
+        "tool_s": 0.1059403,
+        "prompt_tokens": 3758,
+        "completion_tokens": 370,
+        "cached_tokens": 5,
+        "truncated": true
+      },
+      {
+        "index": 7,
+        "tool": "python",
+        "llm_ttft_s": 26.234781,
+        "llm_generation_s": 16.3036675,
+        "tool_s": 0.0692105,
+        "prompt_tokens": 3701,
+        "completion_tokens": 350,
+        "cached_tokens": 5,
+        "truncated": true
+      }
+    ]
+  }
+}

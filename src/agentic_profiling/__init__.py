@@ -26,6 +26,24 @@ def _git_commit() -> str | None:
         return None
 
 
+def llm_from_config(cfg: dict) -> LLM:
+    return LLM(base_url=cfg["base_url"], model=cfg["model"], api_key=cfg.get("api_key", "unused"),
+               temperature=cfg.get("temperature", 0.0), max_tokens=cfg.get("max_tokens", 512),
+               seed=cfg.get("seed", 0))
+
+
+def run_meta(cfg: dict, tasks_file: str, stamp: str) -> dict:
+    return {
+        "config": cfg,
+        "tasks_file": tasks_file,
+        "started_utc": stamp,
+        "git_commit": _git_commit(),
+        "python": sys.version.split()[0],
+        "platform": platform.platform(),
+        "openai_version": version("openai"),
+    }
+
+
 def _check(answer: str | None, expected: list[str]) -> bool:
     """Acerto simples: alguma das respostas esperadas aparece na resposta (sem maiúsculas)."""
     if answer is None:
@@ -48,18 +66,8 @@ def main() -> None:
     out = args.out or Path("traces") / f"{args.config.stem}-{args.tasks.stem}-{stamp}"
     out.mkdir(parents=True, exist_ok=True)
 
-    llm = LLM(base_url=cfg["base_url"], model=cfg["model"], api_key=cfg.get("api_key", "unused"),
-              temperature=cfg.get("temperature", 0.0), max_tokens=cfg.get("max_tokens", 512),
-              seed=cfg.get("seed", 0))
-    meta = {
-        "config": cfg,
-        "tasks_file": str(args.tasks),
-        "started_utc": stamp,
-        "git_commit": _git_commit(),
-        "python": sys.version.split()[0],
-        "platform": platform.platform(),
-        "openai_version": version("openai"),
-    }
+    llm = llm_from_config(cfg)
+    meta = run_meta(cfg, str(args.tasks), stamp)
     (out / "run_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
     n_ok = 0

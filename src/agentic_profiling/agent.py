@@ -7,6 +7,7 @@ prompt do passo N+1. É precisamente isso que o prefix caching aproveita.
 
 import re
 import time
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 
 from .llm import LLM
@@ -105,7 +106,9 @@ def _common_prefix_len(a: str, b: str) -> int:
     return i
 
 
-def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8) -> Trace:
+def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8,
+             on_step: Callable[[Step], None] | None = None) -> Trace:
+    """Corre uma tarefa. `on_step` é chamado no fim de cada passo (usado pela interface web)."""
     system = SYSTEM_PROMPT.format(
         tools="\n".join(f"- {desc}" for _, desc in TOOLS.values()),
         names=", ".join(TOOLS),
@@ -175,6 +178,8 @@ def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8) -> Trace
             output=output,
             observation=observation,
         ))
+        if on_step is not None:
+            on_step(trace.steps[-1])
         prev_prompt = prompt
         if trace.finished:
             break

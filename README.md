@@ -25,6 +25,7 @@ multi-agent load.
 - [Repository layout](#repository-layout)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Web interface and results page](#web-interface-and-results-page)
 - [Configuration](#configuration)
 - [Task files](#task-files)
 - [Trace format](#trace-format)
@@ -119,9 +120,18 @@ agentic-profiling/
 │   ├── __init__.py     CLI: runs a task file, writes one trace per task + run metadata
 │   ├── agent.py        ReAct loop, Step / Trace dataclasses, prefix measurement
 │   ├── llm.py          streaming OpenAI-compatible client: TTFT, decode time, tokens
-│   └── tools.py        search (Wikipedia), calculator, python
+│   ├── tools.py        search (Wikipedia), calculator, python
+│   ├── summarize.py    agentic-summary: per-run table (accuracy, time split, prefix reuse)
+│   ├── export.py       agentic-export: results/<name>.json + DATA of the results page
+│   └── server.py       agentic-ui: local web server (results page + live "Ask" tab)
+├── docs/
+│   └── index.html      results page (React + Tailwind, no build step; GitHub Pages)
+├── results/            exported experiment results (JSON, tracked by git)
+├── tests/              pytest suite (tools, ReAct loop with a fake LLM, truncation detection)
 ├── configs/
-│   └── ollama.yaml     server, model and sampling parameters
+│   ├── ollama.yaml     llama3.2:3b (8k context), sampling parameters
+│   ├── ollama-qwen.yaml qwen2.5:3b (8k context)
+│   └── ollama/         Modelfiles that raise Ollama's context to 8192 tokens
 ├── tasks/
 │   └── smoke.yaml      5 smoke-test tasks (one per tool, multi-hop, combined)
 ├── requirements/       human-readable dependency lists
@@ -179,6 +189,39 @@ Output (one line per task, then a summary):
 
 Each run writes a directory `traces/<config>-<tasks>-<UTC timestamp>/` containing
 `run_meta.json` and one `<task_id>.json` per task.
+
+## Web interface and results page
+
+```bash
+uv run agentic-ui          # opens http://localhost:8000
+```
+
+The page has three tabs:
+
+- **Results**: summary tiles, prompt-vs-cache chart for one task, time breakdown per run,
+  the full runs table and correct answers per task. All numbers come from the `DATA`
+  object in `docs/index.html`.
+- **Ask the agent** (local only): type any question, pick a model and watch the agent
+  work live. Each step shows the thought, the tool call, the observation, TTFT,
+  generation and tool time, prompt tokens and cache hit. Every question is saved as a
+  trace in `traces/ask/`.
+- **About**: what the project measures and how to run it.
+
+The same `docs/index.html` is published with **GitHub Pages** (Settings → Pages → branch
+`main`, folder `/docs`). There it shows the Results and About tabs; the Ask tab needs the
+local Python server and Ollama.
+
+To publish a new experiment on the page:
+
+```bash
+uv run agentic-summary traces/<experiment>/*            # check the numbers
+uv run agentic-export <name> traces/<experiment>/*     --title "Short title" --description "One paragraph for the page"
+git add results docs && git commit -m "Results: <name>" && git push
+```
+
+`agentic-export` writes `results/<name>.json` and rebuilds `DATA` from every file in
+`results/`. Use `--example <run>/<task_id>` to choose the task shown in the step chart
+(default: the longest task that was answered correctly).
 
 ## Configuration
 

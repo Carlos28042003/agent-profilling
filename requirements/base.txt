@@ -9,3 +9,5 @@ pandas
 matplotlib
 pyyaml          # configs dos experimentos
 tqdm
+fastapi         # API da interface web (agentic-ui)
+uvicorn

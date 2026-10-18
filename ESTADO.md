@@ -73,6 +73,10 @@ Disco: limpar modelos não usados (`ollama rm`, `~/.cache/huggingface`).
 | Deteção de truncagem de contexto no resumo (coluna `truncated_steps` + aviso) | `summarize.py`, `tests/test_summarize.py` | ✅ |
 | Exemplo resolvido (few-shot) no system prompt, com código Python em várias linhas | `agent.py` | ✅ |
 | Ferramenta `python` remove também crases simples à volta do código | `tools.py` | ✅ |
+| **Página de resultados (React + Tailwind, sem build)** com separadores Results / Ask / About; tema claro/escuro; testada a 375 px | `docs/index.html` | ✅ |
+| **Interface local para perguntar ao agente** e ver cada passo ao vivo (SSE); grava traces em `traces/ask/` | `server.py` (`agentic-ui`) | ✅ |
+| **Exportação** de experiências para `results/<nome>.json` + atualização do `DATA` da página | `export.py` (`agentic-export`) | ✅ |
+| Resultados da Semana 1 exportados (ronda A com truncagem e ronda C final) | `results/week1-*.json` | ✅ |
 | README em inglês e detalhado (para o Prof. Zhao) | `README.md` | ✅ |
 | Git: branch `main`, `.gitignore`, `.gitattributes` (LF), GitHub `Carlos28042003/agent-profilling`, autor Carlos Chirindza | — | ✅ |
 
@@ -188,7 +192,9 @@ Por tarefa (ronda C): `search_1`, `calc_1` e `code_1` acertam sempre (6/6); `com
 | 12 | No PowerShell 5.1, `echo "..." >> ficheiro` escreve em UTF-16 (estragou o README uma vez) | Ficheiros corrompidos no GitHub | Editar no VS Code, ou `Add-Content -Encoding utf8` |
 | 13 | No Windows, `uv sync` falha se o `agentic-profiling.exe` estiver a correr (ficheiro bloqueado) | — | Correr `uv sync` só sem execuções ativas |
 | 14 | ~~Ollama trunca o contexto aos 4096 tokens sem avisar~~ | Perde a pergunta e o cache (TTFT 4.4×) | **Resolvido:** Modelfiles com `num_ctx 8192` + deteção automática no `agentic-summary`. No vLLM: definir `--max-model-len` |
-| 15 | Os traces ficam só no computador local (`traces/` está no `.gitignore`) | Perde-se a evidência se o disco falhar | Antes do relatório: copiar os traces finais para `results/` (comprimidos) e fazer commit |
+| 15 | Os traces completos ficam só no computador local (`traces/` está no `.gitignore`) | Perde-se o detalhe se o disco falhar | **Em parte resolvido:** os resumos vão para `results/*.json` (no git) com `agentic-export`. Antes do relatório: guardar também os traces finais comprimidos |
+| 16 | A página carrega React, Babel e Tailwind de CDNs e compila o JSX no browser | Primeira abertura ~1-2 s mais lenta; precisa de internet | Aceitável para uma página de resultados. Se for preciso, migrar para Vite com build |
+| 17 | O separador "Ask" foi testado pela API (pergunta → passos → resposta "391" → trace gravado) mas não clicado num browser real | Pode haver um detalhe de interface por afinar | Testar manualmente com `uv run agentic-ui` |
 
 ---
 
@@ -205,12 +211,30 @@ Por tarefa (ronda C): `search_1`, `calc_1` e `code_1` acertam sempre (6/6); `com
   tarefa, throughput. SGLang se houver tempo. Mandar email curto ao Prof. Zhao com os primeiros resultados.
 - **Semana 5 (16-22 nov):** 8/16/32 agentes concorrentes (cliente assíncrono) + uma otimização
   medida (ex.: ordenar pedidos para reuso de cache, ou truncar contexto vs. acurácia).
-- **Semana 6-8:** relatório de 4 páginas, README com resultados e reprodução num comando,
-  email e candidaturas (ISE + CS em Indiana), submeter até 10 dez.
+- **Semana 6 (23-29 nov):** relatório de 4 páginas; README com resultados e reprodução num
+  comando; **página de resultados online**: `docs/index.html` já existe, basta exportar cada
+  experiência com `agentic-export` e ativar o GitHub Pages (Settings → Pages → branch `main`,
+  pasta `/docs`). Pôr o link no email e no CV.
+- **Semanas 7-8:** email ao Prof. Zhao, candidaturas (ISE + CS em Indiana), submeter até 10 dez.
+- **Dica do plano novo:** exportar os resultados de cada experiência para JSON desde cedo
+  (`agentic-export`), para a página da Semana 6 ficar pronta sem trabalho extra.
 
 ---
 
-## 6. Como correr com vLLM (Semana 4)
+## 6. Interface web e página de resultados
+
+```powershell
+uv run agentic-ui                         # abre http://localhost:8000 (Results + Ask + About)
+uv run agentic-export <nome> traces/<pasta>/* --title "..." --description "..."
+```
+
+- **Ask the agent:** escrever uma pergunta, escolher o modelo e ver o agente trabalhar passo
+  a passo (pensamento, ferramenta, resultado, TTFT, tokens, cache). Só funciona localmente.
+- **Results:** lê o objeto `DATA` de `docs/index.html`, que o `agentic-export` gera a partir
+  de `results/*.json`. Nunca editar o `DATA` à mão.
+- `?theme=light` ou `?theme=dark` no fim do endereço força o tema.
+
+## 7. Como correr com vLLM (Semana 4)
 
 ```bash
 # Terminal 1 — servidor (venv separado)

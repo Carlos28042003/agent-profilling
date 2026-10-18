@@ -1,0 +1,228 @@
+{
+  "id": "week1-c-final",
+  "title": "Week 1 · final (8k context + worked example)",
+  "description": "Smoke test, 5 tasks × 3 runs × 2 models, Ollama on a GTX 1650 (4 GB), 8192-token context and a worked example in the system prompt. About 80% of every prompt repeats the previous step and Ollama serves about 85% of prompt tokens from its cache; the LLM takes 85-93% of the time.",
+  "exported": "2026-10-18",
+  "runs": [
+    {
+      "run": "llama-run1",
+      "model": "llama3.2:3b-ctx8k",
+      "accuracy": 0.8,
+      "finished": 1.0,
+      "steps_mean": 4.0,
+      "task_s_p50": 20.79,
+      "task_s_max": 50.8,
+      "llm_%": 92.79,
+      "tool_%": 7.21,
+      "overhead_%": 0.0,
+      "ttft_mean_s": 4.4,
+      "prompt_tok_max": 1612,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 80.14,
+      "cached_tok_%": 85.02
+    },
+    {
+      "run": "llama-run2",
+      "model": "llama3.2:3b-ctx8k",
+      "accuracy": 0.6,
+      "finished": 1.0,
+      "steps_mean": 5.0,
+      "task_s_p50": 27.71,
+      "task_s_max": 49.38,
+      "llm_%": 91.39,
+      "tool_%": 8.61,
+      "overhead_%": 0.0,
+      "ttft_mean_s": 3.21,
+      "prompt_tok_max": 2037,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 84.8,
+      "cached_tok_%": 88.79
+    },
+    {
+      "run": "llama-run3",
+      "model": "llama3.2:3b-ctx8k",
+      "accuracy": 0.8,
+      "finished": 1.0,
+      "steps_mean": 4.2,
+      "task_s_p50": 21.75,
+      "task_s_max": 43.19,
+      "llm_%": 89.45,
+      "tool_%": 10.55,
+      "overhead_%": 0.0,
+      "ttft_mean_s": 3.47,
+      "prompt_tok_max": 1918,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 80.26,
+      "cached_tok_%": 85.18
+    },
+    {
+      "run": "qwen-run1",
+      "model": "qwen2.5:3b-ctx8k",
+      "accuracy": 0.6,
+      "finished": 1.0,
+      "steps_mean": 4.2,
+      "task_s_p50": 21.43,
+      "task_s_max": 41.51,
+      "llm_%": 86.58,
+      "tool_%": 13.41,
+      "overhead_%": 0.01,
+      "ttft_mean_s": 3.71,
+      "prompt_tok_max": 2022,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 82.0,
+      "cached_tok_%": 87.66
+    },
+    {
+      "run": "qwen-run2",
+      "model": "qwen2.5:3b-ctx8k",
+      "accuracy": 0.6,
+      "finished": 1.0,
+      "steps_mean": 4.2,
+      "task_s_p50": 20.12,
+      "task_s_max": 40.66,
+      "llm_%": 87.15,
+      "tool_%": 12.84,
+      "overhead_%": 0.01,
+      "ttft_mean_s": 3.24,
+      "prompt_tok_max": 2352,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 81.44,
+      "cached_tok_%": 86.49
+    },
+    {
+      "run": "qwen-run3",
+      "model": "qwen2.5:3b-ctx8k",
+      "accuracy": 0.6,
+      "finished": 1.0,
+      "steps_mean": 4.0,
+      "task_s_p50": 19.83,
+      "task_s_max": 42.44,
+      "llm_%": 85.45,
+      "tool_%": 14.55,
+      "overhead_%": 0.01,
+      "ttft_mean_s": 3.27,
+      "prompt_tok_max": 1988,
+      "truncated_steps": 0,
+      "prefix_reuse_%": 79.59,
+      "cached_tok_%": 85.99
+    }
+  ],
+  "per_task": {
+    "calc_1": {
+      "llama-run1": 1,
+      "llama-run2": 1,
+      "llama-run3": 1,
+      "qwen-run1": 1,
+      "qwen-run2": 1,
+      "qwen-run3": 1
+    },
+    "code_1": {
+      "llama-run1": 1,
+      "llama-run2": 1,
+      "llama-run3": 1,
+      "qwen-run1": 1,
+      "qwen-run2": 1,
+      "qwen-run3": 1
+    },
+    "combo_1": {
+      "llama-run1": 1,
+      "llama-run2": 0,
+      "llama-run3": 1,
+      "qwen-run1": 0,
+      "qwen-run2": 0,
+      "qwen-run3": 0
+    },
+    "multihop_1": {
+      "llama-run1": 0,
+      "llama-run2": 0,
+      "llama-run3": 0,
+      "qwen-run1": 0,
+      "qwen-run2": 0,
+      "qwen-run3": 0
+    },
+    "search_1": {
+      "llama-run1": 1,
+      "llama-run2": 1,
+      "llama-run3": 1,
+      "qwen-run1": 1,
+      "qwen-run2": 1,
+      "qwen-run3": 1
+    }
+  },
+  "example": {
+    "run": "llama-run3",
+    "task_id": "search_1",
+    "question": "In which year was the Eiffel Tower completed?",
+    "answer": "1889",
+    "correct": true,
+    "model": "llama3.2:3b-ctx8k",
+    "steps": [
+      {
+        "index": 0,
+        "tool": "search",
+        "llm_ttft_s": 2.5082873,
+        "llm_generation_s": 1.3561113,
+        "tool_s": 1.3771092,
+        "prompt_tokens": 515,
+        "completion_tokens": 33,
+        "cached_tokens": 514,
+        "truncated": false
+      },
+      {
+        "index": 1,
+        "tool": "search",
+        "llm_ttft_s": 4.7049412,
+        "llm_generation_s": 1.4505807,
+        "tool_s": 1.4618711,
+        "prompt_tokens": 903,
+        "completion_tokens": 34,
+        "cached_tokens": 544,
+        "truncated": false
+      },
+      {
+        "index": 2,
+        "tool": "search",
+        "llm_ttft_s": 4.4936913,
+        "llm_generation_s": 2.0689884,
+        "tool_s": 1.9316589,
+        "prompt_tokens": 1248,
+        "completion_tokens": 44,
+        "cached_tokens": 936,
+        "truncated": false
+      },
+      {
+        "index": 3,
+        "tool": "python",
+        "llm_ttft_s": 5.6060068,
+        "llm_generation_s": 5.0679991,
+        "tool_s": 0.0823016,
+        "prompt_tokens": 1687,
+        "completion_tokens": 96,
+        "cached_tokens": 1291,
+        "truncated": false
+      },
+      {
+        "index": 4,
+        "tool": "python",
+        "llm_ttft_s": 2.5411539,
+        "llm_generation_s": 4.6170502,
+        "tool_s": 1.6e-06,
+        "prompt_tokens": 1795,
+        "completion_tokens": 86,
+        "cached_tokens": 1779,
+        "truncated": false
+      },
+      {
+        "index": 5,
+        "tool": null,
+        "llm_ttft_s": 2.7789159,
+        "llm_generation_s": 1.1430852,
+        "tool_s": 0.0,
+        "prompt_tokens": 1918,
+        "completion_tokens": 22,
+        "cached_tokens": 1877,
+        "truncated": false
+      }
+    ]
+  }
+}
