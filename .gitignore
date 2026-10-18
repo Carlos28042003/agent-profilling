@@ -6,10 +6,10 @@ __pycache__/
 .ruff_cache/
 .ipynb_checkpoints/
 
-# Saídas dos experimentos (traces grandes ficam fora do git; resultados finais vão em results/)
+# Experiment output (large traces stay out of git; exported results go in results/)
 traces/
 *.log
 
-# Ambiente
+# Environment
 .env
 .DS_Store

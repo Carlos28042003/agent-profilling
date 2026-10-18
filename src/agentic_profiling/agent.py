@@ -1,8 +1,8 @@
-"""Loop ReAct escrito à mão, com um registo por passo para o profiling.
+"""Hand-written ReAct loop that records one profiling entry per step.
 
-O histórico só cresce por append (system, pergunta, depois pares
-assistente/observação), por isso o prompt do passo N é um prefixo do
-prompt do passo N+1. É precisamente isso que o prefix caching aproveita.
+The history is append-only (system, question, then assistant/observation
+pairs), so the prompt of step N is a prefix of the prompt of step N+1.
+That is exactly what prefix caching exploits.
 """
 
 import re
@@ -62,7 +62,7 @@ FINAL_RE = re.compile(r"Final Answer:\s*(.*)", re.DOTALL)
 @dataclass
 class Step:
     index: int
-    t_start: float               # segundos desde o início da tarefa
+    t_start: float               # seconds since the task started
     llm_ttft_s: float
     llm_generation_s: float
     llm_total_s: float
@@ -74,7 +74,7 @@ class Step:
     completion_tokens: int | None
     cached_tokens: int | None
     prompt_chars: int
-    shared_prefix_chars: int     # caracteres iguais ao prompt do passo anterior
+    shared_prefix_chars: int     # chars shared with the previous step's prompt
     output: str
     observation: str | None
 
@@ -88,7 +88,7 @@ class Trace:
     stop_reason: str = ""
     total_s: float = 0.0
     steps: list[Step] = field(default_factory=list)
-    messages: list[dict] = field(default_factory=list)  # conversa final, para re-tokenizar
+    messages: list[dict] = field(default_factory=list)  # final conversation, for offline re-tokenization
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -108,7 +108,7 @@ def _common_prefix_len(a: str, b: str) -> int:
 
 def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8,
              on_step: Callable[[Step], None] | None = None) -> Trace:
-    """Corre uma tarefa. `on_step` é chamado no fim de cada passo (usado pela interface web)."""
+    """Run one task. `on_step` is called after each step (used by the web UI)."""
     system = SYSTEM_PROMPT.format(
         tools="\n".join(f"- {desc}" for _, desc in TOOLS.values()),
         names=", ".join(TOOLS),
@@ -144,7 +144,7 @@ def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8,
                 seen_actions.add(key)
                 try:
                     observation = TOOLS[tool][0](tool_input)
-                except Exception as e:  # noqa: BLE001 — falhas de rede/ferramenta viram observação
+                except Exception as e:  # noqa: BLE001 — network/tool failures become observations
                     observation = f"Error: {type(e).__name__}: {e}"
             else:
                 observation = f"Error: unknown tool {tool!r}. Use one of: {', '.join(TOOLS)}."

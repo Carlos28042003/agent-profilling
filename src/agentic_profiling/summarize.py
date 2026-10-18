@@ -1,4 +1,4 @@
-"""Resumo de uma ou mais pastas de traces: acurácia, passos, tempo e prefixo repetido.
+"""Summary of one or more trace directories: accuracy, steps, time and repeated prefix.
 
     agentic-summary traces/week1/llama-run1 traces/week1/llama-run2 ...
 """
@@ -23,9 +23,9 @@ def load_steps(run_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
                       "finished": t["finished"], "n_steps": len(t["steps"]), "total_s": t["total_s"]})
         prev = None
         for s in t["steps"]:
-            # O servidor truncou o contexto: o prompt cresceu em texto, mas quase não em tokens.
-            # Texto acrescentado dá >= ~0.18 tokens/carácter (inglês corrido); abaixo de 0.12
-            # significa que o início da conversa foi cortado.
+            # The server truncated the context: the prompt grew in text but barely in tokens.
+            # Appended text yields >= ~0.18 tokens/char (plain English); below 0.12 means
+            # the start of the conversation was cut.
             truncated = bool(prev is not None and s["prompt_tokens"] and prev["prompt_tokens"]
                              and s["prompt_chars"] > prev["prompt_chars"]
                              and (s["prompt_tokens"] - prev["prompt_tokens"])
@@ -36,7 +36,7 @@ def load_steps(run_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def summarize(tasks: pd.DataFrame, steps: pd.DataFrame) -> pd.DataFrame:
-    later = steps[steps["index"] > 0]  # o passo 0 não tem passo anterior para reaproveitar
+    later = steps[steps["index"] > 0]  # step 0 has no previous step to reuse
     by_run = steps.groupby("run")
     llm, tool, total = by_run["llm_total_s"].sum(), by_run["tool_s"].sum(), by_run["step_total_s"].sum()
     out = pd.DataFrame({
@@ -62,7 +62,7 @@ def summarize(tasks: pd.DataFrame, steps: pd.DataFrame) -> pd.DataFrame:
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     p = argparse.ArgumentParser(prog="agentic-summary")
-    p.add_argument("runs", type=Path, nargs="+", help="pastas de traces")
+    p.add_argument("runs", type=Path, nargs="+", help="trace directories")
     args = p.parse_args()
 
     loaded = [load_steps(r) for r in args.runs]
@@ -73,8 +73,8 @@ def main() -> None:
     summary = summarize(tasks, steps)
     print(summary.to_string())
     if summary["truncated_steps"].any():
-        print("\nAVISO: o servidor truncou o contexto em alguns passos (ver truncated_steps); "
-              "aumente num_ctx / max-model-len.")
-    print("\nAcertos por tarefa (todas as execuções):")
+        print("\nWARNING: the server truncated the context in some steps (see truncated_steps); "
+              "increase num_ctx / max-model-len.")
+    print("\nCorrect answers per task (all runs):")
     print(tasks.pivot_table(index="task_id", columns="run", values="correct", aggfunc="first")
           .astype(int).to_string())

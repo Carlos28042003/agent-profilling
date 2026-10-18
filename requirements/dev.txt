@@ -1,4 +1,4 @@
-# Desenvolvimento
+# Development
 pytest
 ruff
-ipykernel       # notebooks para explorar os traces
+ipykernel       # notebooks to explore traces

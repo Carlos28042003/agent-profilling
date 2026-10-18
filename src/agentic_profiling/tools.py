@@ -1,4 +1,4 @@
-"""As três ferramentas do agente: busca na Wikipedia, calculadora e execução de Python."""
+"""The agent's three tools: Wikipedia search, calculator and Python execution."""
 
 import ast
 import html
@@ -16,7 +16,7 @@ MAX_OBS_CHARS = 1500
 
 
 def wikipedia_search(query: str) -> str:
-    """Procura na Wikipedia: resumo do melhor resultado + excertos dos seguintes."""
+    """Search Wikipedia: summary of the best match + snippets of the next results."""
     headers = {"User-Agent": USER_AGENT}
     search = requests.get(
         WIKI_API,
@@ -51,7 +51,7 @@ _CALC_FUNCS = {"sqrt", "log", "exp", "sin", "cos", "tan", "pi", "E", "Abs", "flo
 
 
 def calculator(expression: str) -> str:
-    """Avalia uma expressão aritmética. A AST é validada antes de chegar ao sympy."""
+    """Evaluate an arithmetic expression. The AST is validated before it reaches SymPy."""
     expression = expression.strip().strip("`").replace("^", "**")
     try:
         tree = ast.parse(expression, mode="eval")
@@ -65,15 +65,15 @@ def calculator(expression: str) -> str:
     try:
         value = sympy.sympify(expression)
         return str(value.evalf(15) if not value.is_Integer else value)
-    except Exception as e:  # noqa: BLE001 — o erro volta para o agente como observação
+    except Exception as e:  # noqa: BLE001 — the error goes back to the agent as an observation
         return f"Error: {e}"
 
 
 def python_exec(code: str, timeout: float = 10.0) -> str:
-    """Corre código Python num subprocesso isolado (-I) numa pasta temporária, com timeout.
+    """Run Python code in an isolated subprocess (-I) in a temporary directory, with a timeout.
 
-    Nota: isto limita danos acidentais mas NÃO é um sandbox de segurança.
-    Para código não confiável (SWE-bench), correr dentro de um container.
+    Note: this limits accidental damage but is NOT a security sandbox.
+    For untrusted code (SWE-bench), run it inside a container.
     """
     code = code.strip().removeprefix("```python").removeprefix("```").removesuffix("```").strip("`")
     with tempfile.TemporaryDirectory() as tmp:

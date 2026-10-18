@@ -1,2 +1,2 @@
-# Finais de linha LF no repositório (evita problemas Windows <-> Linux)
+# LF line endings in the repository (avoids Windows <-> Linux issues)
 * text=auto eol=lf

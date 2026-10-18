@@ -1,7 +1,7 @@
-"""Cliente LLM instrumentado: mede TTFT, tempo de geração e tokens de cada chamada.
+"""Instrumented LLM client: measures TTFT, generation time and tokens of every call.
 
-Usa a API compatível com OpenAI, por isso serve para Ollama, vLLM e SGLang
-mudando apenas `base_url`.
+It uses the OpenAI-compatible API, so it works with Ollama, vLLM and SGLang
+by changing only `base_url`.
 """
 
 import time
@@ -13,11 +13,11 @@ from openai import OpenAI
 @dataclass
 class LLMResult:
     text: str
-    ttft_s: float          # tempo até ao primeiro token
-    total_s: float         # tempo total da chamada
+    ttft_s: float          # time to first token
+    total_s: float         # total call time
     prompt_tokens: int | None
     completion_tokens: int | None
-    cached_tokens: int | None   # tokens de prompt servidos do cache (se o servidor reportar)
+    cached_tokens: int | None   # prompt tokens served from cache (if the server reports it)
 
     @property
     def generation_s(self) -> float:

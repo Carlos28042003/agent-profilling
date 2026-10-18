@@ -1,4 +1,4 @@
-# Servidor vLLM (Semanas 4-5) — só Linux + GPU NVIDIA (>= 24 GB para modelos 7-8B)
-# Instalar NUM VENV SEPARADO do projeto (o vLLM fixa a sua própria versão de torch):
+# vLLM server (Weeks 4-5) — Linux + NVIDIA GPU only (>= 24 GB for 7-8B models)
+# Install in a SEPARATE venv from the project (vLLM pins its own torch version):
 #   uv venv ~/venvs/vllm && source ~/venvs/vllm/bin/activate && uv pip install -r requirements/gpu.txt
 vllm

@@ -139,7 +139,7 @@ agentic-profiling/
 │   ├── dev.txt         pytest, ruff, ipykernel
 │   ├── gpu.txt         vLLM server (Linux + NVIDIA GPU, separate venv)
 │   └── sglang.txt      SGLang server (Linux + NVIDIA GPU, separate venv)
-├── ESTADO.md           working notes: progress, known issues, next steps
+├── STATUS.md           working notes: progress, known issues, next steps
 ├── pyproject.toml
 └── uv.lock             exact pinned versions
 ```
@@ -181,10 +181,10 @@ uv run agentic-profiling configs/ollama.yaml tasks/smoke.yaml
 Output (one line per task, then a summary):
 
 ```
-[OK ] calc_1       3 passos   10.1s  ferramentas=['calculator']  resposta='7097663'
-[OK ] combo_1      6 passos   35.0s  ferramentas=['search', 'search', 'search', 'search', 'calculator']  resposta='23'
+[OK ] calc_1       3 steps   10.1s  tools=['calculator']  answer='7097663'
+[OK ] combo_1      6 steps   35.0s  tools=['search', 'search', 'search', 'search', 'calculator']  answer='23'
 ...
-3/5 corretas — traces em traces/ollama-smoke-20261018T105312Z
+3/5 correct — traces in traces/ollama-smoke-20261018T105312Z
 ```
 
 Each run writes a directory `traces/<config>-<tasks>-<UTC timestamp>/` containing

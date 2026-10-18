@@ -1,9 +1,9 @@
-"""Interface web local: serve a página de resultados (docs/) e corre o agente ao vivo.
+"""Local web interface: serves the results page (docs/) and runs the agent live.
 
-    agentic-ui            # abre http://localhost:8000
+    agentic-ui            # opens http://localhost:8000
 
-Na página, o separador "Ask" só aparece quando esta API está a correr; no GitHub Pages
-(estático) a página mostra apenas os resultados.
+The page's "Ask" tab only works while this API is running; on GitHub Pages
+(static) the page shows the results only.
 """
 
 import argparse
@@ -50,7 +50,7 @@ def ask(question: str = Query(..., min_length=3, max_length=500),
         config: str = "ollama", max_steps: int = Query(8, ge=1, le=15)) -> StreamingResponse:
     cfgs = _configs()
     if config not in cfgs:
-        raise HTTPException(404, f"config {config!r} não existe")
+        raise HTTPException(404, f"config {config!r} does not exist")
     cfg = cfgs[config]
     events: queue.Queue = queue.Queue()
 
@@ -67,7 +67,7 @@ def ask(question: str = Query(..., min_length=3, max_length=500),
             events.put(("done", {"answer": trace.answer, "finished": trace.finished,
                                  "stop_reason": trace.stop_reason, "total_s": trace.total_s,
                                  "model": cfg["model"], "saved_to": str(path.relative_to(ROOT))}))
-        except Exception as e:  # noqa: BLE001 — o erro vai para o browser em vez de cortar a ligação
+        except Exception as e:  # noqa: BLE001 — send the error to the browser instead of dropping the connection
             events.put(("error", {"message": f"{type(e).__name__}: {e}"}))
 
     threading.Thread(target=worker, daemon=True).start()

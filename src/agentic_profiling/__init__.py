@@ -1,4 +1,4 @@
-"""CLI: corre um conjunto de tarefas e grava um trace JSON por tarefa.
+"""CLI: runs a task file and writes one JSON trace per task.
 
     agentic-profiling configs/ollama.yaml tasks/smoke.yaml
 """
@@ -45,7 +45,7 @@ def run_meta(cfg: dict, tasks_file: str, stamp: str) -> dict:
 
 
 def _check(answer: str | None, expected: list[str]) -> bool:
-    """Acerto simples: alguma das respostas esperadas aparece na resposta (sem maiúsculas)."""
+    """Simple check: any expected answer appears in the final answer (case-insensitive)."""
     if answer is None:
         return False
     a = answer.lower().replace(",", "")
@@ -55,9 +55,9 @@ def _check(answer: str | None, expected: list[str]) -> bool:
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     p = argparse.ArgumentParser(prog="agentic-profiling")
-    p.add_argument("config", type=Path, help="YAML com servidor/modelo/parâmetros")
-    p.add_argument("tasks", type=Path, help="YAML com a lista de tarefas")
-    p.add_argument("--out", type=Path, help="pasta dos traces (default: traces/<config>-<tasks>-<data>)")
+    p.add_argument("config", type=Path, help="YAML with server, model and parameters")
+    p.add_argument("tasks", type=Path, help="YAML with the list of tasks")
+    p.add_argument("--out", type=Path, help="trace directory (default: traces/<config>-<tasks>-<timestamp>)")
     args = p.parse_args()
 
     cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
@@ -79,7 +79,7 @@ def main() -> None:
         (out / f"{task['id']}.json").write_text(json.dumps(record, indent=2, ensure_ascii=False),
                                                 encoding="utf-8")
         tools = [s.tool for s in trace.steps if s.tool]
-        print(f"[{'OK ' if ok else 'ERR'}] {task['id']:<12} {len(trace.steps)} passos "
-              f"{trace.total_s:6.1f}s  ferramentas={tools}  resposta={trace.answer!r}")
+        print(f"[{'OK ' if ok else 'ERR'}] {task['id']:<12} {len(trace.steps)} steps "
+              f"{trace.total_s:6.1f}s  tools={tools}  answer={trace.answer!r}")
 
-    print(f"\n{n_ok}/{len(tasks)} corretas — traces em {out}")
+    print(f"\n{n_ok}/{len(tasks)} correct — traces in {out}")

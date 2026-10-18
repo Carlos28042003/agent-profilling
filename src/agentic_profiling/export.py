@@ -1,9 +1,10 @@
-"""Exporta uma experiência para results/<nome>.json e atualiza o DATA da página de resultados.
+"""Export an experiment to results/<name>.json and update DATA on the results page.
 
     agentic-export week1 traces/week1/* --title "..." --description "..."
-    agentic-export --page-only        # só reconstrói o DATA de docs/index.html a partir de results/
+    agentic-export --page-only        # only rebuild DATA in docs/index.html from results/
 
-A página (docs/index.html) lê tudo do objeto DATA, entre os marcadores DATA:START e DATA:END.
+The page (docs/index.html) reads everything from the DATA object between the
+DATA:START and DATA:END markers.
 """
 
 import argparse
@@ -27,7 +28,7 @@ STEP_FIELDS = ["index", "tool", "llm_ttft_s", "llm_generation_s", "tool_s",
 
 
 def _example(run_dirs: list[Path], steps: pd.DataFrame, choice: str | None) -> dict:
-    """Uma tarefa para o gráfico passo a passo: a escolhida, ou a mais longa que acertou."""
+    """One task for the step-by-step chart: the chosen one, or the longest correct one."""
     if choice:
         run, task_id = choice.split("/")
     else:
@@ -82,7 +83,7 @@ def update_page() -> int:
     block = "/* DATA:START */\nconst DATA = " + json.dumps(data, indent=2, ensure_ascii=False) + ";\n/* DATA:END */"
     html = PAGE.read_text(encoding="utf-8")
     if not DATA_RE.search(html):
-        sys.exit(f"Marcadores DATA:START/DATA:END não encontrados em {PAGE}")
+        sys.exit(f"DATA:START/DATA:END markers not found in {PAGE}")
     PAGE.write_text(DATA_RE.sub(lambda _: block, html), encoding="utf-8", newline="\n")
     return len(experiments)
 
@@ -90,18 +91,18 @@ def update_page() -> int:
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     p = argparse.ArgumentParser(prog="agentic-export")
-    p.add_argument("name", nargs="?", help="nome da experiência (ficheiro results/<nome>.json)")
-    p.add_argument("runs", type=Path, nargs="*", help="pastas de traces")
+    p.add_argument("name", nargs="?", help="experiment name (file results/<name>.json)")
+    p.add_argument("runs", type=Path, nargs="*", help="trace directories")
     p.add_argument("--title", default="")
     p.add_argument("--description", default="")
-    p.add_argument("--example", help="tarefa para o gráfico passo a passo, como run/task_id")
-    p.add_argument("--page-only", action="store_true", help="só atualizar docs/index.html")
+    p.add_argument("--example", help="task for the step chart, as run/task_id")
+    p.add_argument("--page-only", action="store_true", help="only update docs/index.html")
     args = p.parse_args()
 
     if not args.page_only:
         if not args.name or not args.runs:
-            p.error("indique o nome e as pastas de traces (ou --page-only)")
+            p.error("give the experiment name and trace directories (or --page-only)")
         out = export(args.name, args.runs, args.title or args.name, args.description, args.example)
-        print(f"Exportado: {out.relative_to(ROOT)}")
+        print(f"Exported: {out.relative_to(ROOT)}")
     n = update_page()
-    print(f"Página atualizada: {PAGE.relative_to(ROOT)} ({n} experiências)")
+    print(f"Page updated: {PAGE.relative_to(ROOT)} ({n} experiments)")
