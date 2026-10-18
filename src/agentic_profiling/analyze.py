@@ -55,7 +55,7 @@ def load(run_dirs: list[Path]) -> tuple[pd.DataFrame, pd.DataFrame]:
     extra = []
     for r in run_dirs:
         for f in r.glob("*.json"):
-            if not f.name.startswith("run_meta"):
+            if not f.name.startswith("run_"):
                 t = json.loads(f.read_text(encoding="utf-8"))
                 extra.append({"run": r.name, "task_id": t["task_id"], "f1": t.get("f1")})
     tasks = tasks.merge(pd.DataFrame(extra), on=["run", "task_id"], how="left")

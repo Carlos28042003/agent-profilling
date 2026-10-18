@@ -1,0 +1,9 @@
+# llama.cpp server (Week 4), prompt caching OFF: every request recomputes the whole prompt.
+base_url: http://localhost:8080/v1
+model: llama3.2:3b
+temperature: 0.0
+seed: 0
+max_tokens: 512
+max_steps: 8
+extra_body:
+  cache_prompt: false

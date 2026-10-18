@@ -24,6 +24,7 @@
       --series-1: #2a78d6;  /* blue: prompt tokens, LLM time */
       --series-2: #eb6834;  /* orange: cached tokens, tool time */
       --series-3: #1baf7a;  /* aqua: overhead, TTFT */
+      --series-4: #eda100;  /* yellow: overhead in the 4-part split */
       --good: #008300;
       --bad: #c4302b;
     }
@@ -42,6 +43,7 @@
         --series-1: #3987e5;
         --series-2: #d95926;
         --series-3: #199e70;
+        --series-4: #c98500;
         --good: #4cb84c;
         --bad: #e66767;
       }
@@ -60,6 +62,7 @@
       --series-1: #3987e5;
       --series-2: #d95926;
       --series-3: #199e70;
+        --series-4: #c98500;
       --good: #4cb84c;
       --bad: #e66767;
     }
@@ -85,7 +88,7 @@ const DATA = {
     {
       "id": "week1-a-ctx4k",
       "title": "Week 1 · 4k context (truncation)",
-      "description": "Smoke test, 5 tasks × 3 runs × 2 models, Ollama on a GTX 1650 (4 GB), default 4096-token context. In code_1 the history outgrew the context at step 5: Ollama silently cut the start of the conversation, cached tokens fell from 3,102 to 5 and TTFT rose from 6.1 s to 26.8 s (4.4×). Accuracy here is as originally graded ('London' accepted).",
+      "description": "Smoke test, 5 tasks × 3 runs × 2 models, Ollama on a GTX 1650 (4 GB), default 4096-token context. In code_1 the history outgrew the context at step 5: Ollama silently cut the start of the conversation, cached tokens fell from 3,102 to 5 and TTFT rose from 6.1 s to 26.8 s (4.4×). Accuracy here is as originally graded (London accepted).",
       "exported": "2026-10-18",
       "runs": [
         {
@@ -330,6 +333,442 @@ const DATA = {
             "truncated": true
           }
         ]
+      },
+      "stats": {
+        "llama-run1": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 0.8,
+          "steps_mean": 7.0,
+          "steps_median": 8.0,
+          "task_s_p50": 48.5,
+          "task_s_p95": 265.4,
+          "time_split_%": {
+            "prefill (TTFT)": 45.5,
+            "decode": 49.3,
+            "tools": 5.3,
+            "overhead": 0.0
+          },
+          "llm_calls": 35,
+          "prompt_tokens_mean": 1492.0,
+          "prompt_tokens_max": 3768,
+          "context_growth_tokens_per_step": 278.0,
+          "repeated_prefix_%_all_calls": 84.9,
+          "repeated_prefix_%_steps_ge1": 87.0,
+          "cached_%_all_calls": 65.1,
+          "truncated_steps": 3
+        },
+        "llama-run2": {
+          "tasks": 5,
+          "accuracy": 1.0,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 6.4,
+          "steps_median": 7.0,
+          "task_s_p50": 41.4,
+          "task_s_p95": 44.1,
+          "time_split_%": {
+            "prefill (TTFT)": 64.3,
+            "decode": 22.8,
+            "tools": 13.0,
+            "overhead": 0.0
+          },
+          "llm_calls": 32,
+          "prompt_tokens_mean": 1104.0,
+          "prompt_tokens_max": 2098,
+          "context_growth_tokens_per_step": 250.0,
+          "repeated_prefix_%_all_calls": 81.7,
+          "repeated_prefix_%_steps_ge1": 84.6,
+          "cached_%_all_calls": 84.8,
+          "truncated_steps": 0
+        },
+        "llama-run3": {
+          "tasks": 5,
+          "accuracy": 1.0,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 6.2,
+          "steps_median": 6.0,
+          "task_s_p50": 33.0,
+          "task_s_p95": 47.0,
+          "time_split_%": {
+            "prefill (TTFT)": 65.0,
+            "decode": 21.0,
+            "tools": 14.1,
+            "overhead": 0.0
+          },
+          "llm_calls": 31,
+          "prompt_tokens_mean": 1068.0,
+          "prompt_tokens_max": 2369,
+          "context_growth_tokens_per_step": 255.0,
+          "repeated_prefix_%_all_calls": 80.6,
+          "repeated_prefix_%_steps_ge1": 83.7,
+          "cached_%_all_calls": 84.0,
+          "truncated_steps": 0
+        },
+        "qwen-run1": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 0.8,
+          "steps_mean": 4.2,
+          "steps_median": 4.0,
+          "task_s_p50": 17.0,
+          "task_s_p95": 133.0,
+          "time_split_%": {
+            "prefill (TTFT)": 56.0,
+            "decode": 39.2,
+            "tools": 4.7,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 1251.0,
+          "prompt_tokens_max": 3984,
+          "context_growth_tokens_per_step": 608.0,
+          "repeated_prefix_%_all_calls": 83.6,
+          "repeated_prefix_%_steps_ge1": 87.5,
+          "cached_%_all_calls": 62.9,
+          "truncated_steps": 2
+        },
+        "qwen-run2": {
+          "tasks": 5,
+          "accuracy": 0.4,
+          "f1": null,
+          "finished": 0.8,
+          "steps_mean": 4.4,
+          "steps_median": 4.0,
+          "task_s_p50": 16.7,
+          "task_s_p95": 133.4,
+          "time_split_%": {
+            "prefill (TTFT)": 45.4,
+            "decode": 45.0,
+            "tools": 9.6,
+            "overhead": 0.0
+          },
+          "llm_calls": 22,
+          "prompt_tokens_mean": 1315.0,
+          "prompt_tokens_max": 3984,
+          "context_growth_tokens_per_step": 576.0,
+          "repeated_prefix_%_all_calls": 81.7,
+          "repeated_prefix_%_steps_ge1": 85.2,
+          "cached_%_all_calls": 75.4,
+          "truncated_steps": 2
+        },
+        "qwen-run3": {
+          "tasks": 5,
+          "accuracy": 0.4,
+          "f1": null,
+          "finished": 0.8,
+          "steps_mean": 4.2,
+          "steps_median": 3.0,
+          "task_s_p50": 18.1,
+          "task_s_p95": 48.8,
+          "time_split_%": {
+            "prefill (TTFT)": 57.9,
+            "decode": 32.9,
+            "tools": 9.1,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 712.0,
+          "prompt_tokens_max": 1467,
+          "context_growth_tokens_per_step": 159.0,
+          "repeated_prefix_%_all_calls": 78.3,
+          "repeated_prefix_%_steps_ge1": 85.0,
+          "cached_%_all_calls": 85.6,
+          "truncated_steps": 0
+        }
+      },
+      "growth": {
+        "llama-run1": [
+          {
+            "step": 0,
+            "p25": 246,
+            "p50": 247,
+            "p75": 248,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 560,
+            "p50": 584,
+            "p75": 606,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 947,
+            "p50": 1049,
+            "p75": 1095,
+            "n": 5
+          }
+        ],
+        "llama-run2": [
+          {
+            "step": 0,
+            "p25": 246,
+            "p50": 247,
+            "p75": 248,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 556,
+            "p50": 584,
+            "p75": 606,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 647,
+            "p50": 931,
+            "p75": 1049,
+            "n": 5
+          }
+        ],
+        "llama-run3": [
+          {
+            "step": 0,
+            "p25": 246,
+            "p50": 247,
+            "p75": 248,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 556,
+            "p50": 584,
+            "p75": 606,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 647,
+            "p50": 931,
+            "p75": 1049,
+            "n": 5
+          }
+        ],
+        "qwen-run1": [
+          {
+            "step": 0,
+            "p25": 236,
+            "p50": 236,
+            "p75": 236,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 559,
+            "p50": 584,
+            "p75": 629,
+            "n": 5
+          }
+        ],
+        "qwen-run2": [
+          {
+            "step": 0,
+            "p25": 236,
+            "p50": 236,
+            "p75": 236,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 559,
+            "p50": 584,
+            "p75": 629,
+            "n": 5
+          }
+        ],
+        "qwen-run3": [
+          {
+            "step": 0,
+            "p25": 236,
+            "p50": 236,
+            "p75": 236,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 559,
+            "p50": 584,
+            "p75": 607,
+            "n": 5
+          }
+        ]
+      },
+      "reuse_by_step": {
+        "llama-run1": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 73.7
+          },
+          {
+            "step": 1,
+            "reuse_pct": 52.1,
+            "cached_pct": 51.7
+          },
+          {
+            "step": 2,
+            "reuse_pct": 67.0,
+            "cached_pct": 66.9
+          }
+        ],
+        "llama-run2": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 92.6
+          },
+          {
+            "step": 1,
+            "reuse_pct": 52.5,
+            "cached_pct": 52.0
+          },
+          {
+            "step": 2,
+            "reuse_pct": 70.8,
+            "cached_pct": 70.7
+          }
+        ],
+        "llama-run3": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 92.6
+          },
+          {
+            "step": 1,
+            "reuse_pct": 51.9,
+            "cached_pct": 51.5
+          },
+          {
+            "step": 2,
+            "reuse_pct": 71.0,
+            "cached_pct": 70.9
+          }
+        ],
+        "qwen-run1": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 73.3
+          },
+          {
+            "step": 1,
+            "reuse_pct": 53.1,
+            "cached_pct": 52.9
+          }
+        ],
+        "qwen-run2": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 91.7
+          },
+          {
+            "step": 1,
+            "reuse_pct": 53.1,
+            "cached_pct": 52.9
+          }
+        ],
+        "qwen-run3": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 93.8
+          },
+          {
+            "step": 1,
+            "reuse_pct": 53.7,
+            "cached_pct": 53.5
+          }
+        ]
+      },
+      "latency": {
+        "llama-run1": [
+          10.14,
+          43.22,
+          48.54,
+          66.59,
+          315.09
+        ],
+        "llama-run2": [
+          9.49,
+          30.12,
+          41.43,
+          41.58,
+          44.72
+        ],
+        "llama-run3": [
+          9.45,
+          29.92,
+          33.04,
+          41.19,
+          48.45
+        ],
+        "qwen-run1": [
+          12.86,
+          14.19,
+          17.0,
+          57.67,
+          151.84
+        ],
+        "qwen-run2": [
+          12.87,
+          14.53,
+          16.69,
+          26.48,
+          160.1
+        ],
+        "qwen-run3": [
+          8.6,
+          10.65,
+          18.12,
+          23.43,
+          55.14
+        ]
+      },
+      "time_split": {
+        "llama-run1": {
+          "prefill (TTFT)": 45.5,
+          "decode": 49.3,
+          "tools": 5.3,
+          "overhead": 0.0
+        },
+        "llama-run2": {
+          "prefill (TTFT)": 64.3,
+          "decode": 22.8,
+          "tools": 13.0,
+          "overhead": 0.0
+        },
+        "llama-run3": {
+          "prefill (TTFT)": 65.0,
+          "decode": 21.0,
+          "tools": 14.1,
+          "overhead": 0.0
+        },
+        "qwen-run1": {
+          "prefill (TTFT)": 56.0,
+          "decode": 39.2,
+          "tools": 4.7,
+          "overhead": 0.0
+        },
+        "qwen-run2": {
+          "prefill (TTFT)": 45.4,
+          "decode": 45.0,
+          "tools": 9.6,
+          "overhead": 0.0
+        },
+        "qwen-run3": {
+          "prefill (TTFT)": 57.9,
+          "decode": 32.9,
+          "tools": 9.1,
+          "overhead": 0.0
+        }
       }
     },
     {
@@ -558,6 +997,442 @@ const DATA = {
             "truncated": false
           }
         ]
+      },
+      "stats": {
+        "llama-run1": {
+          "tasks": 5,
+          "accuracy": 0.8,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.0,
+          "steps_median": 4.0,
+          "task_s_p50": 20.8,
+          "task_s_p95": 47.0,
+          "time_split_%": {
+            "prefill (TTFT)": 66.9,
+            "decode": 25.9,
+            "tools": 7.2,
+            "overhead": 0.0
+          },
+          "llm_calls": 20,
+          "prompt_tokens_mean": 934.0,
+          "prompt_tokens_max": 1612,
+          "context_growth_tokens_per_step": 251.0,
+          "repeated_prefix_%_all_calls": 73.4,
+          "repeated_prefix_%_steps_ge1": 85.2,
+          "cached_%_all_calls": 83.9,
+          "truncated_steps": 0
+        },
+        "llama-run2": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 5.0,
+          "steps_median": 5.0,
+          "task_s_p50": 27.7,
+          "task_s_p95": 46.2,
+          "time_split_%": {
+            "prefill (TTFT)": 57.4,
+            "decode": 34.0,
+            "tools": 8.6,
+            "overhead": 0.0
+          },
+          "llm_calls": 25,
+          "prompt_tokens_mean": 1097.0,
+          "prompt_tokens_max": 2037,
+          "context_growth_tokens_per_step": 210.0,
+          "repeated_prefix_%_all_calls": 80.5,
+          "repeated_prefix_%_steps_ge1": 88.9,
+          "cached_%_all_calls": 89.6,
+          "truncated_steps": 0
+        },
+        "llama-run3": {
+          "tasks": 5,
+          "accuracy": 0.8,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "steps_median": 4.0,
+          "task_s_p50": 21.7,
+          "task_s_p95": 41.1,
+          "time_split_%": {
+            "prefill (TTFT)": 56.0,
+            "decode": 33.5,
+            "tools": 10.6,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 1012.0,
+          "prompt_tokens_max": 1918,
+          "context_growth_tokens_per_step": 284.0,
+          "repeated_prefix_%_all_calls": 75.0,
+          "repeated_prefix_%_steps_ge1": 85.3,
+          "cached_%_all_calls": 86.7,
+          "truncated_steps": 0
+        },
+        "qwen-run1": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "steps_median": 4.0,
+          "task_s_p50": 21.4,
+          "task_s_p95": 39.8,
+          "time_split_%": {
+            "prefill (TTFT)": 63.3,
+            "decode": 23.3,
+            "tools": 13.4,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 1039.0,
+          "prompt_tokens_max": 2022,
+          "context_growth_tokens_per_step": 212.0,
+          "repeated_prefix_%_all_calls": 77.0,
+          "repeated_prefix_%_steps_ge1": 87.8,
+          "cached_%_all_calls": 86.4,
+          "truncated_steps": 0
+        },
+        "qwen-run2": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "steps_median": 4.0,
+          "task_s_p50": 20.1,
+          "task_s_p95": 38.8,
+          "time_split_%": {
+            "prefill (TTFT)": 62.6,
+            "decode": 24.5,
+            "tools": 12.8,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 1089.0,
+          "prompt_tokens_max": 2352,
+          "context_growth_tokens_per_step": 262.0,
+          "repeated_prefix_%_all_calls": 76.5,
+          "repeated_prefix_%_steps_ge1": 86.6,
+          "cached_%_all_calls": 87.7,
+          "truncated_steps": 0
+        },
+        "qwen-run3": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.0,
+          "steps_median": 4.0,
+          "task_s_p50": 19.8,
+          "task_s_p95": 40.3,
+          "time_split_%": {
+            "prefill (TTFT)": 59.2,
+            "decode": 26.3,
+            "tools": 14.5,
+            "overhead": 0.0
+          },
+          "llm_calls": 20,
+          "prompt_tokens_mean": 980.0,
+          "prompt_tokens_max": 1988,
+          "context_growth_tokens_per_step": 214.0,
+          "repeated_prefix_%_all_calls": 74.4,
+          "repeated_prefix_%_steps_ge1": 86.1,
+          "cached_%_all_calls": 87.5,
+          "truncated_steps": 0
+        }
+      },
+      "growth": {
+        "llama-run1": [
+          {
+            "step": 0,
+            "p25": 517,
+            "p50": 518,
+            "p75": 519,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 629,
+            "p50": 851,
+            "p75": 898,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 764,
+            "p50": 1162,
+            "p75": 1222,
+            "n": 5
+          }
+        ],
+        "llama-run2": [
+          {
+            "step": 0,
+            "p25": 517,
+            "p50": 518,
+            "p75": 519,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 629,
+            "p50": 856,
+            "p75": 882,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 764,
+            "p50": 1167,
+            "p75": 1206,
+            "n": 5
+          }
+        ],
+        "llama-run3": [
+          {
+            "step": 0,
+            "p25": 517,
+            "p50": 518,
+            "p75": 519,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 629,
+            "p50": 851,
+            "p75": 898,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 764,
+            "p50": 1162,
+            "p75": 1225,
+            "n": 5
+          }
+        ],
+        "qwen-run1": [
+          {
+            "step": 0,
+            "p25": 535,
+            "p50": 535,
+            "p75": 535,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 626,
+            "p50": 840,
+            "p75": 888,
+            "n": 5
+          }
+        ],
+        "qwen-run2": [
+          {
+            "step": 0,
+            "p25": 535,
+            "p50": 535,
+            "p75": 535,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 626,
+            "p50": 817,
+            "p75": 888,
+            "n": 5
+          }
+        ],
+        "qwen-run3": [
+          {
+            "step": 0,
+            "p25": 535,
+            "p50": 535,
+            "p75": 535,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 626,
+            "p50": 840,
+            "p75": 888,
+            "n": 5
+          }
+        ]
+      },
+      "reuse_by_step": {
+        "llama-run1": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 77.2
+          },
+          {
+            "step": 1,
+            "reuse_pct": 72.3,
+            "cached_pct": 71.9
+          },
+          {
+            "step": 2,
+            "reuse_pct": 81.3,
+            "cached_pct": 81.2
+          }
+        ],
+        "llama-run2": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 97.2
+          },
+          {
+            "step": 1,
+            "reuse_pct": 72.5,
+            "cached_pct": 72.1
+          },
+          {
+            "step": 2,
+            "reuse_pct": 81.3,
+            "cached_pct": 81.2
+          }
+        ],
+        "llama-run3": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 97.8
+          },
+          {
+            "step": 1,
+            "reuse_pct": 72.8,
+            "cached_pct": 72.4
+          },
+          {
+            "step": 2,
+            "reuse_pct": 81.6,
+            "cached_pct": 81.5
+          }
+        ],
+        "qwen-run1": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 77.0
+          },
+          {
+            "step": 1,
+            "reuse_pct": 73.2,
+            "cached_pct": 73.0
+          }
+        ],
+        "qwen-run2": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 97.0
+          },
+          {
+            "step": 1,
+            "reuse_pct": 73.7,
+            "cached_pct": 73.5
+          }
+        ],
+        "qwen-run3": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 97.0
+          },
+          {
+            "step": 1,
+            "reuse_pct": 73.2,
+            "cached_pct": 73.0
+          }
+        ]
+      },
+      "latency": {
+        "llama-run1": [
+          11.5,
+          16.58,
+          20.79,
+          31.82,
+          50.8
+        ],
+        "llama-run2": [
+          11.66,
+          17.4,
+          27.71,
+          33.5,
+          49.38
+        ],
+        "llama-run3": [
+          11.81,
+          20.96,
+          21.75,
+          32.57,
+          43.19
+        ],
+        "qwen-run1": [
+          6.17,
+          20.95,
+          21.43,
+          33.12,
+          41.51
+        ],
+        "qwen-run2": [
+          6.15,
+          10.4,
+          20.12,
+          31.35,
+          40.66
+        ],
+        "qwen-run3": [
+          6.12,
+          10.27,
+          19.83,
+          31.86,
+          42.44
+        ]
+      },
+      "time_split": {
+        "llama-run1": {
+          "prefill (TTFT)": 66.9,
+          "decode": 25.9,
+          "tools": 7.2,
+          "overhead": 0.0
+        },
+        "llama-run2": {
+          "prefill (TTFT)": 57.4,
+          "decode": 34.0,
+          "tools": 8.6,
+          "overhead": 0.0
+        },
+        "llama-run3": {
+          "prefill (TTFT)": 56.0,
+          "decode": 33.5,
+          "tools": 10.6,
+          "overhead": 0.0
+        },
+        "qwen-run1": {
+          "prefill (TTFT)": 63.3,
+          "decode": 23.3,
+          "tools": 13.4,
+          "overhead": 0.0
+        },
+        "qwen-run2": {
+          "prefill (TTFT)": 62.6,
+          "decode": 24.5,
+          "tools": 12.8,
+          "overhead": 0.0
+        },
+        "qwen-run3": {
+          "prefill (TTFT)": 59.2,
+          "decode": 26.3,
+          "tools": 14.5,
+          "overhead": 0.0
+        }
       }
     }
   ]
@@ -699,11 +1574,130 @@ const DATA = {
       );
     }
 
+    /* ---------- Week 3 charts: context growth, latency CDF, 4-part time split ---------- */
+
+    const SERIES = ["var(--series-1)", "var(--series-2)", "var(--series-3)"];
+
+    function LineChart({ series, xLabel, yLabel, yMax, band, stepLine, fmtY = (v) => v.toLocaleString(), fmtX = (v) => v }) {
+      // series: [{name, points: [{x, y, lo?, hi?}]}]
+      const [tip, setTip] = useState(null);
+      const wrap = useRef(null);
+      const W = 640, H = 260, m = { t: 12, r: 16, b: 38, l: 52 };
+      const all = series.flatMap((s) => s.points);
+      if (!all.length) return null;
+      const xMin = stepLine ? 0 : Math.min(...all.map((p) => p.x)), xMax = Math.max(...all.map((p) => p.x));
+      const top = yMax ?? Math.max(...all.map((p) => p.hi ?? p.y)) * 1.08;
+      const iw = W - m.l - m.r, ih = H - m.t - m.b;
+      const x = (v) => m.l + (xMax === xMin ? iw / 2 : ((v - xMin) / (xMax - xMin)) * iw);
+      const y = (v) => m.t + ih - (v / top) * ih;
+      const yt = [0, 0.25, 0.5, 0.75, 1].map((f) => top * f);
+      const path = (pts) => stepLine
+        ? pts.map((p, i) => (i === 0 ? `M${x(p.x)},${y(0)} V${y(p.y)}` : `H${x(p.x)} V${y(p.y)}`)).join(" ")
+        : pts.map((p, i) => `${i ? "L" : "M"}${x(p.x)},${y(p.y)}`).join(" ");
+      const onMove = (e) => {
+        const r = wrap.current.getBoundingClientRect();
+        const px = ((e.clientX - r.left) / r.width) * W;
+        const rows = series.map((s, i) => {
+          const near = s.points.reduce((a, p) => (Math.abs(x(p.x) - px) < Math.abs(x(a.x) - px) ? p : a), s.points[0]);
+          return [s.name, `${fmtY(near.y)} @ ${fmtX(near.x)}`, SERIES[i]];
+        });
+        setTip({ x: e.clientX - r.left, y: e.clientY - r.top, title: xLabel, rows });
+      };
+      return (
+        <div ref={wrap} className="relative">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" onMouseMove={onMove} onMouseLeave={() => setTip(null)}>
+            {yt.map((t) => (
+              <g key={t}>
+                <line x1={m.l} x2={W - m.r} y1={y(t)} y2={y(t)} stroke="var(--grid)" />
+                <text x={m.l - 8} y={y(t)} dy="0.32em" textAnchor="end" fontSize="11" fill="var(--text-muted)">{fmtY(Math.round(t))}</text>
+              </g>
+            ))}
+            {series.map((s, i) => band && s.points[0]?.lo !== undefined && (
+              <path key={`b${i}`} fill={SERIES[i]} opacity="0.12"
+                    d={`${s.points.map((p, j) => `${j ? "L" : "M"}${x(p.x)},${y(p.hi)}`).join(" ")} ${[...s.points].reverse().map((p) => `L${x(p.x)},${y(p.lo)}`).join(" ")} Z`} />
+            ))}
+            {series.map((s, i) => (
+              <g key={i}>
+                <path d={path(s.points)} fill="none" stroke={SERIES[i]} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+                {!stepLine && s.points.map((p, j) => <circle key={j} cx={x(p.x)} cy={y(p.y)} r="4" fill={SERIES[i]} stroke="var(--surface-1)" strokeWidth="2" />)}
+              </g>
+            ))}
+            <line x1={m.l} x2={W - m.r} y1={m.t + ih} y2={m.t + ih} stroke="var(--text-muted)" />
+            {(stepLine ? [0, 0.25, 0.5, 0.75, 1].map((f) => xMin + f * (xMax - xMin))
+                       : [...new Set(all.map((p) => p.x))].filter((v, i, a) => a.length <= 12 || i % Math.ceil(a.length / 8) === 0)).map((v) => (
+              <text key={v} x={x(v)} y={H - 20} textAnchor="middle" fontSize="11" fill="var(--text-muted)">{fmtX(v)}</text>
+            ))}
+            <text x={m.l + iw / 2} y={H - 4} textAnchor="middle" fontSize="11" fill="var(--text-secondary)">{xLabel}</text>
+            <text x={12} y={m.t + ih / 2} textAnchor="middle" fontSize="11" fill="var(--text-secondary)" transform={`rotate(-90 12 ${m.t + ih / 2})`}>{yLabel}</text>
+          </svg>
+          <Tooltip tip={tip} />
+        </div>
+      );
+    }
+
+    function TimeSplit({ split }) {
+      const parts = [["Prefill (TTFT)", "prefill (TTFT)", "var(--series-1)"], ["Decode", "decode", "var(--series-2)"],
+                     ["Tools", "tools", "var(--series-3)"], ["Overhead", "overhead", "var(--series-4)"]];
+      return (
+        <div className="space-y-3">
+          <Legend items={parts.map(([l, , c]) => [l, c])} />
+          {Object.entries(split).map(([run, v]) => (
+            <div key={run} className="flex items-center gap-3">
+              <div className="w-24 shrink-0 text-xs secondary mono truncate">{run}</div>
+              <div className="flex-1 flex h-6 gap-[2px]">
+                {parts.map(([l, k, c]) => v[k] > 0.3 && (
+                  <div key={k} title={`${l}: ${fmt(v[k])}%`} className="flex items-center justify-center text-[11px] text-white first:rounded-l last:rounded-r"
+                       style={{ width: `${v[k]}%`, background: c }}>{v[k] >= 9 ? `${Math.round(v[k])}%` : ""}</div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    function CompareView({ rows }) {
+      const cols = [["run", "Setup"], ["tasks", "Tasks"], ["accuracy", "Acc."], ["ttft_p50_s", "TTFT P50 s"], ["ttft_p95_s", "TTFT P95 s"],
+                    ["task_p50_s", "Task P50 s"], ["task_p95_s", "Task P95 s"], ["tasks_per_min", "Tasks/min"],
+                    ["prefill_tokens_computed", "Prefill tokens"], ["cache_hit_%", "Cache hit %"]];
+      const maxT = Math.max(...rows.map((r) => r.tasks_per_min || 0), 1);
+      return (
+        <div className="space-y-5">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm num">
+              <thead><tr>{cols.map(([k, l]) => <th key={k} className="text-left font-medium muted py-2 pr-4 whitespace-nowrap">{l}</th>)}</tr></thead>
+              <tbody>{rows.map((r) => (
+                <tr key={r.run}>{cols.map(([k]) => (
+                  <td key={k} className={`py-2 pr-4 whitespace-nowrap ${k === "run" ? "mono text-xs" : ""}`}>
+                    {k === "accuracy" ? `${Math.round(100 * r[k])}%` : k === "prefill_tokens_computed" && r[k] != null ? r[k].toLocaleString()
+                      : typeof r[k] === "number" ? fmt(r[k], k === "tasks" ? 0 : 1) : r[k] ?? "–"}
+                  </td>))}</tr>))}
+              </tbody>
+            </table>
+          </div>
+          {rows.some((r) => r.tasks_per_min) && (
+            <div>
+              <div className="text-sm font-medium mb-2">Throughput (tasks per minute)</div>
+              <div className="space-y-2">
+                {rows.map((r) => (
+                  <div key={r.run} className="flex items-center gap-3">
+                    <div className="w-28 shrink-0 text-xs secondary mono truncate">{r.run}</div>
+                    <div className="flex-1"><div className="h-5 rounded-r" style={{ width: `${(100 * (r.tasks_per_min || 0)) / maxT}%`, background: "var(--series-1)", borderRadius: "0 4px 4px 0" }} /></div>
+                    <div className="w-12 text-right text-xs num secondary">{fmt(r.tasks_per_min)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     /* ---------- Results tab ---------- */
 
     function RunsTable({ runs }) {
       const cols = [["run", "Run"], ["model", "Model"], ["accuracy", "Acc."], ["finished", "Done"], ["steps_mean", "Steps"],
-                    ["task_s_p50", "P50 s"], ["ttft_mean_s", "TTFT s"], ["prefix_reuse_%", "Prefix %"],
+                    ["task_s_p50", "P50 s"], ["ttft_mean_s", "TTFT s"], ["prefix_reuse_%", "Prefix % (chars)"],
                     ["cached_tok_%", "Cached %"], ["truncated_steps", "Trunc."]];
       return (
         <div className="overflow-x-auto">
@@ -758,6 +1752,8 @@ const DATA = {
       if (!exps.length) return <div className="card p-6 secondary">No results exported yet. Run <code className="mono">uv run agentic-export</code>.</div>;
       const runs = exp.runs;
       const ex = exp.example;
+      const st = exp.stats ? Object.values(exp.stats) : [];
+      const many = Object.keys(exp.per_task || {}).length > 20;
       return (
         <div className="space-y-6">
           <div className="flex flex-wrap gap-2">
@@ -771,9 +1767,11 @@ const DATA = {
           {exp.description && <p className="secondary max-w-3xl">{exp.description}</p>}
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <Stat label="Repeated prefix" value={fmt(mean(runs.map((r) => r["prefix_reuse_%"])), 0)} unit="%" hint="of each prompt (steps ≥ 1)" />
-            <Stat label="Served from cache" value={fmt(mean(runs.map((r) => r["cached_tok_%"])), 0)} unit="%" hint="prompt tokens (Ollama)" />
-            <Stat label="Time in the LLM" value={fmt(mean(runs.map((r) => r["llm_%"])), 0)} unit="%" hint="vs. tools and overhead" />
+            <Stat label="Repeated prefix" value={fmt(st.length ? mean(st.map((v) => v["repeated_prefix_%_steps_ge1"])) : mean(runs.map((r) => r["prefix_reuse_%"])), 0)} unit="%" hint="of each prompt (steps ≥ 1)" />
+            <Stat label="Served from cache" value={fmt(mean(runs.map((r) => r["cached_tok_%"])), 0)} unit="%" hint="prompt tokens" />
+            {st.length
+              ? <Stat label="Time in prefill" value={fmt(mean(st.map((v) => v["time_split_%"]["prefill (TTFT)"])), 0)} unit="%" hint="processing the prompt (TTFT)" />
+              : <Stat label="Time in the LLM" value={fmt(mean(runs.map((r) => r["llm_%"])), 0)} unit="%" hint="vs. tools and overhead" />}
             <Stat label="Accuracy" value={fmt(100 * mean(runs.map((r) => r.accuracy)), 0)} unit="%" hint={`mean of ${runs.length} runs`} />
           </div>
 
@@ -790,19 +1788,53 @@ const DATA = {
             <section className="card p-5">
               <h3 className="font-semibold">Where the time goes</h3>
               <p className="text-xs muted mt-0.5 mb-3">Share of total task time, per run</p>
-              <Legend items={[["LLM", "var(--series-1)"], ["Tools", "var(--series-2)"], ["Overhead", "var(--series-3)"]]} />
-              <div className="mt-3"><TimeBreakdown runs={runs} /></div>
+              {exp.time_split ? <TimeSplit split={exp.time_split} /> : (
+                <>
+                  <Legend items={[["LLM", "var(--series-1)"], ["Tools", "var(--series-2)"], ["Overhead", "var(--series-3)"]]} />
+                  <div className="mt-3"><TimeBreakdown runs={runs} /></div>
+                </>
+              )}
             </section>
           </div>
+
+          {exp.compare && (
+            <section className="card p-5">
+              <h3 className="font-semibold mb-3">Serving comparison</h3>
+              <CompareView rows={exp.compare} />
+            </section>
+          )}
+
+          {exp.growth && (
+            <div className="grid lg:grid-cols-2 gap-6">
+              <section className="card p-5">
+                <h3 className="font-semibold">Context grows every step</h3>
+                <p className="text-xs muted mt-0.5 mb-3">Median prompt tokens per step; band = 25th-75th percentile</p>
+                <Legend items={Object.keys(exp.growth).slice(0, 3).map((r, i) => [r, SERIES[i]])} />
+                <LineChart band xLabel="Step" yLabel="Prompt tokens"
+                           series={Object.entries(exp.growth).slice(0, 3).map(([name, pts]) => ({ name, points: pts.map((p) => ({ x: p.step, y: p.p50, lo: p.p25, hi: p.p75 })) }))} />
+              </section>
+              <section className="card p-5">
+                <h3 className="font-semibold">Task latency CDF</h3>
+                <p className="text-xs muted mt-0.5 mb-3">
+                  {Object.entries(exp.latency).map(([r, xs]) => `${r}: P50 ${fmt(xs[Math.floor(0.5 * (xs.length - 1))], 0)}s, P95 ${fmt(xs[Math.floor(0.95 * (xs.length - 1))], 0)}s`).join(" · ")}
+                </p>
+                <Legend items={Object.keys(exp.latency).slice(0, 3).map((r, i) => [r, SERIES[i]])} />
+                <LineChart stepLine yMax={100} xLabel="Task latency (s)" yLabel="% of tasks" fmtY={(v) => `${v}%`} fmtX={(v) => `${Math.round(v)}`}
+                           series={Object.entries(exp.latency).slice(0, 3).map(([name, xs]) => ({ name, points: xs.map((v, i) => ({ x: v, y: Math.round((100 * (i + 1)) / xs.length) })) }))} />
+              </section>
+            </div>
+          )}
 
           <section className="card p-5">
             <h3 className="font-semibold mb-3">All runs</h3>
             <RunsTable runs={runs} />
           </section>
-          <section className="card p-5">
-            <h3 className="font-semibold mb-3">Correct answers per task</h3>
-            <TaskGrid perTask={exp.per_task} />
-          </section>
+          {!many && (
+            <section className="card p-5">
+              <h3 className="font-semibold mb-3">Correct answers per task</h3>
+              <TaskGrid perTask={exp.per_task} />
+            </section>
+          )}
           <p className="text-xs muted">Exported {exp.exported}. Page data updated {DATA.updated}.</p>
         </div>
       );

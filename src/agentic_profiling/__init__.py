@@ -11,6 +11,7 @@ run resumes where it stopped.
 import argparse
 import json
 import platform
+import re
 import subprocess
 import sys
 import threading
@@ -25,6 +26,8 @@ import yaml
 from .agent import run_task
 from .llm import LLM
 from .metrics import grade
+
+NETWORK_ERROR_RE = re.compile(r"Error: (ConnectionError|ConnectTimeout|ReadTimeout|Timeout|SSLError|ChunkedEncodingError)")
 
 
 def _git_commit() -> str | None:
@@ -79,12 +82,20 @@ def main() -> None:
         json.dumps(meta, indent=2), encoding="utf-8")
 
     lock = threading.Lock()
-    done = {"n": len(tasks) - len(todo)}
+    done = {"n": len(tasks) - len(todo), "infra": 0}
 
     def run_one(task: dict) -> None:
         trace = run_task(llm_from_config(cfg), task["id"], task["question"],
                          max_steps=cfg.get("max_steps", 8), history_window=cfg.get("history_window"),
                          allowed_tools=task.get("tools"))
+        if any(s.observation and NETWORK_ERROR_RE.match(s.observation) for s in trace.steps):
+            # The environment failed, not the agent: do not save, so a resumed run retries the task.
+            with lock:
+                done["n"] += 1
+                done["infra"] += 1
+                print(f"[{done['n']:>3}/{len(tasks)}] [NET] {task['id']:<12} network error in a tool; "
+                      "not saved, rerun to retry", flush=True)
+            return
         g = grade(trace.answer, task.get("expected", []), task.get("metric", "contains"))
         record = {"meta": meta, "expected": task.get("expected"), "metric": task.get("metric", "contains"),
                   **{k: task[k] for k in ("type", "level") if k in task}, **g, **trace.to_dict()}
@@ -102,12 +113,18 @@ def main() -> None:
         list(pool.map(run_one, todo))
     wall = time.perf_counter() - t0
 
-    results = [json.loads((out / f"{t['id']}.json").read_text(encoding="utf-8")) for t in tasks]
+    saved = [out / f"{t['id']}.json" for t in tasks if (out / f"{t['id']}.json").exists()]
+    results = [json.loads(f.read_text(encoding="utf-8")) for f in saved]
     n_ok = sum(r["correct"] for r in results)
-    line = f"\n{n_ok}/{len(tasks)} correct"
+    line = f"\n{n_ok}/{len(results)} correct"
     f1s = [r["f1"] for r in results if r.get("f1") is not None]
     if f1s:
-        line += f" (EM {n_ok / len(tasks):.2f}, F1 {sum(f1s) / len(f1s):.2f})"
+        line += f" (EM {n_ok / len(results):.2f}, F1 {sum(f1s) / len(f1s):.2f})"
     if todo:
         line += f" — {len(todo)} tasks in {wall:.0f}s ({60 * len(todo) / wall:.1f} tasks/min)"
+        summary = {"started_utc": stamp, "tasks_run": len(todo), "wall_s": round(wall, 2),
+                   "tasks_per_min": round(60 * len(todo) / wall, 3), "concurrency": args.concurrency}
+        (out / f"run_summary_{stamp}.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(f"{line} — traces in {out}")
+    if done["infra"]:
+        print(f"{done['infra']} tasks hit network errors and were not saved: run the same command again.")

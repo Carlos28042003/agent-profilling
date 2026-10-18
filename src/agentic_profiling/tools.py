@@ -21,8 +21,8 @@ INTRO_CHARS = 1000
 SENTENCE_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9\"'(])")
 
 
-def _wiki_get(params: dict, retries: int = 3) -> dict:
-    """GET the MediaWiki API, retrying transient network errors."""
+def _wiki_get(params: dict, retries: int = 5) -> dict:
+    """GET the MediaWiki API, retrying transient network errors (~30 s in total)."""
     for attempt in range(retries):
         try:
             r = requests.get(WIKI_API, params={**params, "format": "json"},
@@ -32,7 +32,7 @@ def _wiki_get(params: dict, retries: int = 3) -> dict:
         except requests.RequestException:
             if attempt == retries - 1:
                 raise
-            time.sleep(1 + attempt)
+            time.sleep(2 ** (attempt + 1))
     raise AssertionError("unreachable")
 
 

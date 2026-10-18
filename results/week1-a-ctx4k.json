@@ -1,7 +1,7 @@
 {
   "id": "week1-a-ctx4k",
   "title": "Week 1 · 4k context (truncation)",
-  "description": "Smoke test, 5 tasks × 3 runs × 2 models, Ollama on a GTX 1650 (4 GB), default 4096-token context. In code_1 the history outgrew the context at step 5: Ollama silently cut the start of the conversation, cached tokens fell from 3,102 to 5 and TTFT rose from 6.1 s to 26.8 s (4.4×). Accuracy here is as originally graded ('London' accepted).",
+  "description": "Smoke test, 5 tasks × 3 runs × 2 models, Ollama on a GTX 1650 (4 GB), default 4096-token context. In code_1 the history outgrew the context at step 5: Ollama silently cut the start of the conversation, cached tokens fell from 3,102 to 5 and TTFT rose from 6.1 s to 26.8 s (4.4×). Accuracy here is as originally graded (London accepted).",
   "exported": "2026-10-18",
   "runs": [
     {
@@ -246,5 +246,441 @@
         "truncated": true
       }
     ]
+  },
+  "stats": {
+    "llama-run1": {
+      "tasks": 5,
+      "accuracy": 0.6,
+      "f1": null,
+      "finished": 0.8,
+      "steps_mean": 7.0,
+      "steps_median": 8.0,
+      "task_s_p50": 48.5,
+      "task_s_p95": 265.4,
+      "time_split_%": {
+        "prefill (TTFT)": 45.5,
+        "decode": 49.3,
+        "tools": 5.3,
+        "overhead": 0.0
+      },
+      "llm_calls": 35,
+      "prompt_tokens_mean": 1492.0,
+      "prompt_tokens_max": 3768,
+      "context_growth_tokens_per_step": 278.0,
+      "repeated_prefix_%_all_calls": 84.9,
+      "repeated_prefix_%_steps_ge1": 87.0,
+      "cached_%_all_calls": 65.1,
+      "truncated_steps": 3
+    },
+    "llama-run2": {
+      "tasks": 5,
+      "accuracy": 1.0,
+      "f1": null,
+      "finished": 1.0,
+      "steps_mean": 6.4,
+      "steps_median": 7.0,
+      "task_s_p50": 41.4,
+      "task_s_p95": 44.1,
+      "time_split_%": {
+        "prefill (TTFT)": 64.3,
+        "decode": 22.8,
+        "tools": 13.0,
+        "overhead": 0.0
+      },
+      "llm_calls": 32,
+      "prompt_tokens_mean": 1104.0,
+      "prompt_tokens_max": 2098,
+      "context_growth_tokens_per_step": 250.0,
+      "repeated_prefix_%_all_calls": 81.7,
+      "repeated_prefix_%_steps_ge1": 84.6,
+      "cached_%_all_calls": 84.8,
+      "truncated_steps": 0
+    },
+    "llama-run3": {
+      "tasks": 5,
+      "accuracy": 1.0,
+      "f1": null,
+      "finished": 1.0,
+      "steps_mean": 6.2,
+      "steps_median": 6.0,
+      "task_s_p50": 33.0,
+      "task_s_p95": 47.0,
+      "time_split_%": {
+        "prefill (TTFT)": 65.0,
+        "decode": 21.0,
+        "tools": 14.1,
+        "overhead": 0.0
+      },
+      "llm_calls": 31,
+      "prompt_tokens_mean": 1068.0,
+      "prompt_tokens_max": 2369,
+      "context_growth_tokens_per_step": 255.0,
+      "repeated_prefix_%_all_calls": 80.6,
+      "repeated_prefix_%_steps_ge1": 83.7,
+      "cached_%_all_calls": 84.0,
+      "truncated_steps": 0
+    },
+    "qwen-run1": {
+      "tasks": 5,
+      "accuracy": 0.6,
+      "f1": null,
+      "finished": 0.8,
+      "steps_mean": 4.2,
+      "steps_median": 4.0,
+      "task_s_p50": 17.0,
+      "task_s_p95": 133.0,
+      "time_split_%": {
+        "prefill (TTFT)": 56.0,
+        "decode": 39.2,
+        "tools": 4.7,
+        "overhead": 0.0
+      },
+      "llm_calls": 21,
+      "prompt_tokens_mean": 1251.0,
+      "prompt_tokens_max": 3984,
+      "context_growth_tokens_per_step": 608.0,
+      "repeated_prefix_%_all_calls": 83.6,
+      "repeated_prefix_%_steps_ge1": 87.5,
+      "cached_%_all_calls": 62.9,
+      "truncated_steps": 2
+    },
+    "qwen-run2": {
+      "tasks": 5,
+      "accuracy": 0.4,
+      "f1": null,
+      "finished": 0.8,
+      "steps_mean": 4.4,
+      "steps_median": 4.0,
+      "task_s_p50": 16.7,
+      "task_s_p95": 133.4,
+      "time_split_%": {
+        "prefill (TTFT)": 45.4,
+        "decode": 45.0,
+        "tools": 9.6,
+        "overhead": 0.0
+      },
+      "llm_calls": 22,
+      "prompt_tokens_mean": 1315.0,
+      "prompt_tokens_max": 3984,
+      "context_growth_tokens_per_step": 576.0,
+      "repeated_prefix_%_all_calls": 81.7,
+      "repeated_prefix_%_steps_ge1": 85.2,
+      "cached_%_all_calls": 75.4,
+      "truncated_steps": 2
+    },
+    "qwen-run3": {
+      "tasks": 5,
+      "accuracy": 0.4,
+      "f1": null,
+      "finished": 0.8,
+      "steps_mean": 4.2,
+      "steps_median": 3.0,
+      "task_s_p50": 18.1,
+      "task_s_p95": 48.8,
+      "time_split_%": {
+        "prefill (TTFT)": 57.9,
+        "decode": 32.9,
+        "tools": 9.1,
+        "overhead": 0.0
+      },
+      "llm_calls": 21,
+      "prompt_tokens_mean": 712.0,
+      "prompt_tokens_max": 1467,
+      "context_growth_tokens_per_step": 159.0,
+      "repeated_prefix_%_all_calls": 78.3,
+      "repeated_prefix_%_steps_ge1": 85.0,
+      "cached_%_all_calls": 85.6,
+      "truncated_steps": 0
+    }
+  },
+  "growth": {
+    "llama-run1": [
+      {
+        "step": 0,
+        "p25": 246,
+        "p50": 247,
+        "p75": 248,
+        "n": 5
+      },
+      {
+        "step": 1,
+        "p25": 560,
+        "p50": 584,
+        "p75": 606,
+        "n": 5
+      },
+      {
+        "step": 2,
+        "p25": 947,
+        "p50": 1049,
+        "p75": 1095,
+        "n": 5
+      }
+    ],
+    "llama-run2": [
+      {
+        "step": 0,
+        "p25": 246,
+        "p50": 247,
+        "p75": 248,
+        "n": 5
+      },
+      {
+        "step": 1,
+        "p25": 556,
+        "p50": 584,
+        "p75": 606,
+        "n": 5
+      },
+      {
+        "step": 2,
+        "p25": 647,
+        "p50": 931,
+        "p75": 1049,
+        "n": 5
+      }
+    ],
+    "llama-run3": [
+      {
+        "step": 0,
+        "p25": 246,
+        "p50": 247,
+        "p75": 248,
+        "n": 5
+      },
+      {
+        "step": 1,
+        "p25": 556,
+        "p50": 584,
+        "p75": 606,
+        "n": 5
+      },
+      {
+        "step": 2,
+        "p25": 647,
+        "p50": 931,
+        "p75": 1049,
+        "n": 5
+      }
+    ],
+    "qwen-run1": [
+      {
+        "step": 0,
+        "p25": 236,
+        "p50": 236,
+        "p75": 236,
+        "n": 5
+      },
+      {
+        "step": 1,
+        "p25": 559,
+        "p50": 584,
+        "p75": 629,
+        "n": 5
+      }
+    ],
+    "qwen-run2": [
+      {
+        "step": 0,
+        "p25": 236,
+        "p50": 236,
+        "p75": 236,
+        "n": 5
+      },
+      {
+        "step": 1,
+        "p25": 559,
+        "p50": 584,
+        "p75": 629,
+        "n": 5
+      }
+    ],
+    "qwen-run3": [
+      {
+        "step": 0,
+        "p25": 236,
+        "p50": 236,
+        "p75": 236,
+        "n": 5
+      },
+      {
+        "step": 1,
+        "p25": 559,
+        "p50": 584,
+        "p75": 607,
+        "n": 5
+      }
+    ]
+  },
+  "reuse_by_step": {
+    "llama-run1": [
+      {
+        "step": 0,
+        "reuse_pct": 0.0,
+        "cached_pct": 73.7
+      },
+      {
+        "step": 1,
+        "reuse_pct": 52.1,
+        "cached_pct": 51.7
+      },
+      {
+        "step": 2,
+        "reuse_pct": 67.0,
+        "cached_pct": 66.9
+      }
+    ],
+    "llama-run2": [
+      {
+        "step": 0,
+        "reuse_pct": 0.0,
+        "cached_pct": 92.6
+      },
+      {
+        "step": 1,
+        "reuse_pct": 52.5,
+        "cached_pct": 52.0
+      },
+      {
+        "step": 2,
+        "reuse_pct": 70.8,
+        "cached_pct": 70.7
+      }
+    ],
+    "llama-run3": [
+      {
+        "step": 0,
+        "reuse_pct": 0.0,
+        "cached_pct": 92.6
+      },
+      {
+        "step": 1,
+        "reuse_pct": 51.9,
+        "cached_pct": 51.5
+      },
+      {
+        "step": 2,
+        "reuse_pct": 71.0,
+        "cached_pct": 70.9
+      }
+    ],
+    "qwen-run1": [
+      {
+        "step": 0,
+        "reuse_pct": 0.0,
+        "cached_pct": 73.3
+      },
+      {
+        "step": 1,
+        "reuse_pct": 53.1,
+        "cached_pct": 52.9
+      }
+    ],
+    "qwen-run2": [
+      {
+        "step": 0,
+        "reuse_pct": 0.0,
+        "cached_pct": 91.7
+      },
+      {
+        "step": 1,
+        "reuse_pct": 53.1,
+        "cached_pct": 52.9
+      }
+    ],
+    "qwen-run3": [
+      {
+        "step": 0,
+        "reuse_pct": 0.0,
+        "cached_pct": 93.8
+      },
+      {
+        "step": 1,
+        "reuse_pct": 53.7,
+        "cached_pct": 53.5
+      }
+    ]
+  },
+  "latency": {
+    "llama-run1": [
+      10.14,
+      43.22,
+      48.54,
+      66.59,
+      315.09
+    ],
+    "llama-run2": [
+      9.49,
+      30.12,
+      41.43,
+      41.58,
+      44.72
+    ],
+    "llama-run3": [
+      9.45,
+      29.92,
+      33.04,
+      41.19,
+      48.45
+    ],
+    "qwen-run1": [
+      12.86,
+      14.19,
+      17.0,
+      57.67,
+      151.84
+    ],
+    "qwen-run2": [
+      12.87,
+      14.53,
+      16.69,
+      26.48,
+      160.1
+    ],
+    "qwen-run3": [
+      8.6,
+      10.65,
+      18.12,
+      23.43,
+      55.14
+    ]
+  },
+  "time_split": {
+    "llama-run1": {
+      "prefill (TTFT)": 45.5,
+      "decode": 49.3,
+      "tools": 5.3,
+      "overhead": 0.0
+    },
+    "llama-run2": {
+      "prefill (TTFT)": 64.3,
+      "decode": 22.8,
+      "tools": 13.0,
+      "overhead": 0.0
+    },
+    "llama-run3": {
+      "prefill (TTFT)": 65.0,
+      "decode": 21.0,
+      "tools": 14.1,
+      "overhead": 0.0
+    },
+    "qwen-run1": {
+      "prefill (TTFT)": 56.0,
+      "decode": 39.2,
+      "tools": 4.7,
+      "overhead": 0.0
+    },
+    "qwen-run2": {
+      "prefill (TTFT)": 45.4,
+      "decode": 45.0,
+      "tools": 9.6,
+      "overhead": 0.0
+    },
+    "qwen-run3": {
+      "prefill (TTFT)": 57.9,
+      "decode": 32.9,
+      "tools": 9.1,
+      "overhead": 0.0
+    }
   }
 }
