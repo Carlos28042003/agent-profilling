@@ -94,6 +94,7 @@ def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8) -> Trace
     ]
     trace = Trace(task_id=task_id, question=question)
     prev_prompt = ""
+    seen_actions: set[tuple[str, str]] = set()
     t_task = time.perf_counter()
 
     for i in range(max_steps):
@@ -109,8 +110,13 @@ def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8) -> Trace
         action = ACTION_RE.search(output)
         if action and not (final and final.start() < action.start()):
             tool, tool_input = action.group(1).lower(), action.group(2).strip()
+            key = (tool, " ".join(tool_input.lower().split()))
             t_tool = time.perf_counter()
-            if tool in TOOLS:
+            if key in seen_actions:
+                observation = ("You already ran this exact action and got the result above. "
+                               "Use that information, try a different input, or give the Final Answer.")
+            elif tool in TOOLS:
+                seen_actions.add(key)
                 try:
                     observation = TOOLS[tool][0](tool_input)
                 except Exception as e:  # noqa: BLE001 — falhas de rede/ferramenta viram observação
@@ -118,6 +124,8 @@ def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8) -> Trace
             else:
                 observation = f"Error: unknown tool {tool!r}. Use one of: {', '.join(TOOLS)}."
             tool_s = time.perf_counter() - t_tool
+            if i == max_steps - 2:
+                observation += "\n(Only one step left: give your Final Answer now.)"
             messages.append({"role": "user", "content": f"Observation: {observation}"})
         elif final:
             trace.answer = final.group(1).strip()

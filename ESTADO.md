@@ -1,21 +1,22 @@
-# Estado do projeto — passagem para Linux
+# Estado do projeto
 
-Última atualização: 18 out 2026 (fim da Semana 1 do plano de 8 semanas).
+Última atualização: 18 out 2026. Semana 1 do plano de 8 semanas: código concluído e com
+testes automáticos; a fechar a validação (3 execuções × 2 modelos). Semanas 2-8 por fazer.
+Trabalho atual no Windows; o Linux fica para quando for preciso (vLLM, Docker).
 Objetivo: repositório + relatório de 4 páginas sobre profiling de workloads agênticos,
 para a candidatura de PhD (prazo 15 dez 2026, submeter até 10 dez).
 
 ---
 
-## 1. Montar o projeto no Linux
+## 1. Montar o projeto (Linux ou Windows)
 
 ```bash
 # uv (gestor de Python/dependências)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Código: a partir do bundle copiado do Windows (ou git clone, se já estiver no GitHub)
-git clone agentic-profiling.bundle agentic-profiling
+# Código
+git clone https://github.com/Carlos28042003/agent-profilling.git agentic-profiling
 cd agentic-profiling
-git remote remove origin          # o bundle fica como origin; trocar pelo GitHub depois
 
 # Ambiente (Python 3.12 + dependências do uv.lock, incluindo dev)
 uv sync
@@ -23,6 +24,10 @@ uv sync
 # Modelo local para desenvolvimento
 curl -fsSL https://ollama.com/install.sh | sh
 ollama pull llama3.2:3b
+ollama pull qwen2.5:3b
+
+# Testes automáticos (sem modelo nem rede, exceto as ferramentas reais)
+uv run pytest
 
 # Teste: 5 tarefas, deve terminar com "N/5 corretas — traces em traces/..."
 uv run agentic-profiling configs/ollama.yaml tasks/smoke.yaml
@@ -56,7 +61,13 @@ Disco: limpar modelos não usados (`ollama rm`, `~/.cache/huggingface`).
 | Config Ollama | `configs/ollama.yaml` | ✅ |
 | 5 tarefas de teste (search, calc, code, multi-hop, combinação) | `tasks/smoke.yaml` | ✅ |
 | Dependências: `pyproject.toml` + `uv.lock`; cópia legível em `requirements/` | — | ✅ |
-| Git: branch `main`, `.gitignore`, `.gitattributes` (LF) | — | ✅ |
+| Proteção contra ações repetidas: a mesma ação com o mesmo input não volta a correr; o modelo recebe um aviso | `agent.py` | ✅ |
+| Aviso "só falta um passo" no penúltimo passo | `agent.py` | ✅ |
+| Testes automáticos: 14 testes (ferramentas, loop com LLM falso, histórico só por append, repetição, `max_steps`) | `tests/` | ✅ |
+| Resumo de execuções: acurácia, passos, % tempo LLM/ferramenta/overhead, prefixo reaproveitado | `src/agentic_profiling/summarize.py` (`agentic-summary`) | ✅ |
+| Config para comparar modelos: `qwen2.5:3b` | `configs/ollama-qwen.yaml` | ✅ |
+| README em inglês e detalhado (para o Prof. Zhao) | `README.md` | ✅ |
+| Git: branch `main`, `.gitignore`, `.gitattributes` (LF), GitHub `Carlos28042003/agent-profilling`, autor Carlos Chirindza | — | ✅ |
 
 ### Campos registados por passo (trace)
 `t_start`, `llm_ttft_s`, `llm_generation_s`, `llm_total_s`, `tool`, `tool_input`, `tool_s`,
@@ -82,24 +93,52 @@ teste de funcionamento; os do relatório vêm do Linux/GPU.
 
 ---
 
-## 3. Problemas conhecidos
+## 3. Testes da Semana 1
+
+### Como correr
+
+```bash
+uv run pytest                                   # 14 testes automáticos
+
+for r in 1 2 3; do                              # 3 execuções por modelo
+  uv run agentic-profiling configs/ollama.yaml      tasks/smoke.yaml --out traces/week1/llama-run$r
+  uv run agentic-profiling configs/ollama-qwen.yaml tasks/smoke.yaml --out traces/week1/qwen-run$r
+done
+
+uv run agentic-summary traces/week1/*           # tabela comparativa
+```
+
+### Resultados
+
+- `pytest`: **14/14 passam**.
+- Execuções `llama3.2:3b` × 3 e `qwen2.5:3b` × 3: **em curso** (preencher com a saída do `agentic-summary`).
+
+Critério para dar a Semana 1 por fechada: pelo menos um modelo resolve as 5 tarefas de forma
+estável (≥ 4/5 em cada execução) e os traces têm tokens e `cached_tokens` em todos os passos.
+
+---
+
+## 4. Problemas conhecidos
 
 | # | Problema | Impacto | O que fazer |
 |---|---|---|---|
 | 1 | `pip install vllm` falha no Windows (long paths / sem suporte) | Bloqueava o vLLM | **Resolvido com a mudança para Linux.** Instalar em venv separado (ver `requirements/gpu.txt`) |
-| 2 | Acurácia instável com `llama3.2:3b`: 3/5 nas duas execuções, mas não sempre as mesmas tarefas | Modelo repete buscas até `max_steps=8` | Usar modelo 7-8B (ex.: `qwen2.5:7b` no Ollama, ou Qwen2.5-7B-Instruct no vLLM) |
+| 2 | Acurácia instável com `llama3.2:3b`: 3/5 nas duas execuções, mas não sempre as mesmas tarefas | Modelo repete buscas até `max_steps=8` | **Mitigado:** proteção contra repetição + aviso de último passo; comparação com `qwen2.5:3b` em curso. Para os resultados finais: modelo 7-8B |
 | 3 | Busca de texto completo da Wikipedia é fraca com frases ("Christopher Nolan birthplace" devolve Christopher Plummer) | Falhas em multi-hop | Para HotpotQA, considerar ferramenta `lookup[termo]` dentro da página atual (como no paper ReAct) |
 | 4 | Ferramenta `python` não é sandbox de segurança | Risco com código não confiável | No Linux: correr em `docker run --rm --network none` antes de usar SWE-bench |
 | 5 | Verificação da resposta é por substring (`"23"` também acerta `"2023"`) | Acurácia pode ser inflacionada | Usar exact match normalizado (HotpotQA) e comparação numérica (GSM8K) |
 | 6 | `cached_tokens` do Ollama ≠ semântica do vLLM | Comparações entre servidores | Calcular o prefixo repetido também offline, re-tokenizando `messages` com o tokenizer do modelo (`transformers`) |
 | 7 | Servidores sem `stream_options.include_usage` devolvem `prompt_tokens = null` | Falta de tokens no trace | Fallback: contar com o tokenizer |
-| 8 | Sem testes automáticos | — | Adicionar `tests/` para `calculator`, parsing ReAct e `_common_prefix_len` |
-| 9 | Email do autor em `pyproject.toml` é `dticasadagloria@gmail.com` | Fica público no GitHub | Decidir antes de publicar |
-| 10 | Repositório ainda sem remote no GitHub | — | Criar repo (pode começar privado) e `git push -u origin main` |
+| 8 | ~~Sem testes automáticos~~ | — | **Resolvido:** `tests/`, 14 testes |
+| 9 | ~~Email antigo do autor~~ | — | **Resolvido:** histórico reescrito, autor `Carlos Chirindza <carlos.chirindza0@gmail.com>` |
+| 10 | ~~Sem remote no GitHub~~ | — | **Resolvido:** `github.com/Carlos28042003/agent-profilling` |
+| 11 | Nome do repositório no GitHub tem um erro (`agent-profilling`, dois "l") | Aparece no link enviado ao professor | Renomear em *Settings* para `agentic-profiling` e `git remote set-url` |
+| 12 | No PowerShell 5.1, `echo "..." >> ficheiro` escreve em UTF-16 (estragou o README uma vez) | Ficheiros corrompidos no GitHub | Editar no VS Code, ou `Add-Content -Encoding utf8` |
+| 13 | No Windows, `uv sync` falha se o `agentic-profiling.exe` estiver a correr (ficheiro bloqueado) | — | Correr `uv sync` só sem execuções ativas |
 
 ---
 
-## 4. O que falta (plano)
+## 5. O que falta (plano)
 
 - **Semana 2 (26 out-1 nov):** loader de datasets (`datasets`): HotpotQA (distractor/fullwiki)
   e GSM8K; tarefas com seed fixa; correr 100 tarefas; avaliação correta (problema #5);
@@ -117,7 +156,7 @@ teste de funcionamento; os do relatório vêm do Linux/GPU.
 
 ---
 
-## 5. Como correr com vLLM (Semana 4)
+## 6. Como correr com vLLM (Semana 4)
 
 ```bash
 # Terminal 1 — servidor (venv separado)
