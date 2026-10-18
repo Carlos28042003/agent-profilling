@@ -12,7 +12,7 @@ caching**, under single-agent and concurrent multi-agent load.
 This repository is the **backend**: the agent, its tools, the instrumented LLM client,
 the benchmark runner, the analysis and the API server. The results page and the live
 "Ask the agent" UI are a separate React + Tailwind project:
-**[frontend repository](https://github.com/Carlos28042003/agentic-profiling-frontend)**.
+**[frontend repository](https://github.com/Carlos28042003/agent-profilling-fontend)**.
 
 > **Status:** Week 1 complete; Week 2 benchmarks (100 HotpotQA + 100 GSM8K tasks) running;
 > analysis and serving-comparison tooling built. See [STATUS.md](STATUS.md).
