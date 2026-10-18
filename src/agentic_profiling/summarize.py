@@ -10,6 +10,8 @@ from pathlib import Path
 
 import pandas as pd
 
+TRUNCATION_TOKENS_PER_CHAR = 0.12
+
 
 def load_steps(run_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     tasks, steps = [], []
@@ -19,8 +21,17 @@ def load_steps(run_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
         t = json.loads(f.read_text(encoding="utf-8"))
         tasks.append({"run": run_dir.name, "task_id": t["task_id"], "correct": t["correct"],
                       "finished": t["finished"], "n_steps": len(t["steps"]), "total_s": t["total_s"]})
+        prev = None
         for s in t["steps"]:
-            steps.append({"run": run_dir.name, "task_id": t["task_id"], **s})
+            # O servidor truncou o contexto: o prompt cresceu em texto, mas quase não em tokens.
+            # Texto acrescentado dá >= ~0.18 tokens/carácter (inglês corrido); abaixo de 0.12
+            # significa que o início da conversa foi cortado.
+            truncated = bool(prev is not None and s["prompt_tokens"] and prev["prompt_tokens"]
+                             and s["prompt_chars"] > prev["prompt_chars"]
+                             and (s["prompt_tokens"] - prev["prompt_tokens"])
+                             < TRUNCATION_TOKENS_PER_CHAR * (s["prompt_chars"] - prev["prompt_chars"]))
+            steps.append({"run": run_dir.name, "task_id": t["task_id"], "truncated": truncated, **s})
+            prev = s
     return pd.DataFrame(tasks), pd.DataFrame(steps)
 
 
@@ -39,6 +50,7 @@ def summarize(tasks: pd.DataFrame, steps: pd.DataFrame) -> pd.DataFrame:
         "overhead_%": 100 * (total - llm - tool) / total,
         "ttft_mean_s": by_run["llm_ttft_s"].mean(),
         "prompt_tok_max": by_run["prompt_tokens"].max(),
+        "truncated_steps": by_run["truncated"].sum(),
         "prefix_reuse_%": 100 * later.groupby("run")["shared_prefix_chars"].sum()
         / later.groupby("run")["prompt_chars"].sum(),
         "cached_tok_%": 100 * later.groupby("run")["cached_tokens"].sum()
@@ -58,7 +70,11 @@ def main() -> None:
     steps = pd.concat([s for _, s in loaded], ignore_index=True)
 
     pd.set_option("display.width", 200)
-    print(summarize(tasks, steps).to_string())
+    summary = summarize(tasks, steps)
+    print(summary.to_string())
+    if summary["truncated_steps"].any():
+        print("\nAVISO: o servidor truncou o contexto em alguns passos (ver truncated_steps); "
+              "aumente num_ctx / max-model-len.")
     print("\nAcertos por tarefa (todas as execuções):")
     print(tasks.pivot_table(index="task_id", columns="run", values="correct", aggfunc="first")
           .astype(int).to_string())

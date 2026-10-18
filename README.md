@@ -321,7 +321,7 @@ as observations instead of crashing the run, as in real agent deployments.
 
 ## Roadmap
 
-- [x] **Week 1:** ReAct agent, 3 tools, per-step instrumentation, trace format, 5 smoke tasks
+- [x] **Week 1:** ReAct agent, 3 tools, per-step instrumentation, trace format, 5 smoke tasks, tests, run summary (3 runs × 2 models)
 - [ ] **Week 2:** HotpotQA and GSM8K loaders, 100-task runs, proper accuracy metrics
 - [ ] **Week 3:** Characterization: time breakdown, context growth, prefix-reuse fraction, step count and latency distributions (P50/P95), plots
 - [ ] **Week 4:** vLLM with prefix caching on vs. off (TTFT, per-task latency, throughput); SGLang RadixAttention if time permits
@@ -333,9 +333,13 @@ as observations instead of crashing the run, as in real agent deployments.
 - **The `python` tool is not a security sandbox.** It isolates the interpreter and
   limits run time, which is enough for math tasks; code benchmarks (e.g. SWE-bench) will
   run it inside a network-less container.
-- **Small-model accuracy.** With `llama3.2:3b` the agent solves 3 of 5 smoke tasks, and
-  which tasks it solves varies between runs. Failures are mostly repeated searches until
-  `max_steps`. The main experiments use 7-8B models.
+- **Small-model accuracy.** With `llama3.2:3b` the agent solves 3-4 of 5 smoke tasks
+  (3 runs); search, calculator and code tasks always succeed, while the multi-hop task
+  always fails because the model drifts to similar-looking pages. The main experiments
+  use 7-8B models.
+- **Ollama's default context (4096 tokens) silently truncates long agent histories**,
+  which drops the cached prefix (TTFT rose 4.4× in one trace). The configs use
+  `num_ctx 8192` (`configs/ollama/*.Modelfile`) and `agentic-summary` flags truncated steps.
 - **Wikipedia search** uses full-text search, which handles natural-language queries
   poorly. A `lookup` tool (search within the current page, as in the original ReAct
   paper) is planned for HotpotQA.

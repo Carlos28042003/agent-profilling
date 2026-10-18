@@ -75,7 +75,7 @@ def python_exec(code: str, timeout: float = 10.0) -> str:
     Nota: isto limita danos acidentais mas NÃO é um sandbox de segurança.
     Para código não confiável (SWE-bench), correr dentro de um container.
     """
-    code = code.strip().removeprefix("```python").removeprefix("```").removesuffix("```")
+    code = code.strip().removeprefix("```python").removeprefix("```").removesuffix("```").strip("`")
     with tempfile.TemporaryDirectory() as tmp:
         try:
             proc = subprocess.run(

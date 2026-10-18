@@ -30,7 +30,29 @@ Thought: <short reasoning>
 Final Answer: <the answer, as short as possible>
 
 Never write "Action: None". If a search result is not relevant, rephrase the query
-(e.g. search the person's name, then read their page)."""
+(e.g. search the person's name, then read their page).
+
+Example:
+
+Question: How old was the author of "1984" when the book was published?
+Thought: I need the author of "1984" and his birth year.
+Action: search
+Action Input: Nineteen Eighty-Four
+Observation: [Nineteen Eighty-Four] Nineteen Eighty-Four is a novel by the English writer George Orwell. It was published on 8 June 1949...
+Thought: The author is George Orwell and it was published in 1949. I need his birth date.
+Action: search
+Action Input: George Orwell
+Observation: [George Orwell] Eric Arthur Blair (25 June 1903 - 21 January 1950), known by his pen name George Orwell...
+Thought: Born 25 June 1903, book published 8 June 1949, so he was 45 (his birthday had not yet come).
+Action: python
+Action Input:
+from datetime import date
+born, published = date(1903, 6, 25), date(1949, 6, 8)
+age = published.year - born.year - ((published.month, published.day) < (born.month, born.day))
+print(age)
+Observation: 45
+Thought: The answer is 45.
+Final Answer: 45"""
 
 ACTION_RE = re.compile(r"Action:\s*(\w+)\s*\n\s*Action Input:\s*(.*)", re.DOTALL)
 FINAL_RE = re.compile(r"Final Answer:\s*(.*)", re.DOTALL)

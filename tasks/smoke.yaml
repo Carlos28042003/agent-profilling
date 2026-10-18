@@ -10,7 +10,7 @@
   expected: ["76127"]
 - id: multihop_1
   question: In which country was the director of the film "Inception" born?
-  expected: ["United Kingdom", "England", "UK", "London", "British"]
+  expected: ["United Kingdom", "England", "UK", "British"]   # país: "London" não conta (aceitava respostas sobre outra pessoa)
 - id: combo_1
   question: How many years passed between the founding of Google and the founding of Microsoft?
   expected: ["23"]

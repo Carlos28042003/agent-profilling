@@ -1,7 +1,7 @@
 # Estado do projeto
 
-Última atualização: 18 out 2026. Semana 1 do plano de 8 semanas: código concluído e com
-testes automáticos; a fechar a validação (3 execuções × 2 modelos). Semanas 2-8 por fazer.
+Última atualização: 18 out 2026. **Semana 1 concluída** (infraestrutura validada; acurácia
+limitada pelos modelos de 3B, ver secção 3). Semanas 2-8 por fazer.
 Trabalho atual no Windows; o Linux fica para quando for preciso (vLLM, Docker).
 Objetivo: repositório + relatório de 4 páginas sobre profiling de workloads agênticos,
 para a candidatura de PhD (prazo 15 dez 2026, submeter até 10 dez).
@@ -25,6 +25,9 @@ uv sync
 curl -fsSL https://ollama.com/install.sh | sh
 ollama pull llama3.2:3b
 ollama pull qwen2.5:3b
+# Variantes com contexto de 8192 tokens (o padrão do Ollama, 4096, trunca o histórico)
+ollama create llama3.2:3b-ctx8k -f configs/ollama/llama3.2-ctx8k.Modelfile
+ollama create qwen2.5:3b-ctx8k  -f configs/ollama/qwen2.5-ctx8k.Modelfile
 
 # Testes automáticos (sem modelo nem rede, exceto as ferramentas reais)
 uv run pytest
@@ -66,6 +69,10 @@ Disco: limpar modelos não usados (`ollama rm`, `~/.cache/huggingface`).
 | Testes automáticos: 14 testes (ferramentas, loop com LLM falso, histórico só por append, repetição, `max_steps`) | `tests/` | ✅ |
 | Resumo de execuções: acurácia, passos, % tempo LLM/ferramenta/overhead, prefixo reaproveitado | `src/agentic_profiling/summarize.py` (`agentic-summary`) | ✅ |
 | Config para comparar modelos: `qwen2.5:3b` | `configs/ollama-qwen.yaml` | ✅ |
+| Contexto de 8192 tokens via Modelfile (`llama3.2:3b-ctx8k`, `qwen2.5:3b-ctx8k`) | `configs/ollama/*.Modelfile` | ✅ |
+| Deteção de truncagem de contexto no resumo (coluna `truncated_steps` + aviso) | `summarize.py`, `tests/test_summarize.py` | ✅ |
+| Exemplo resolvido (few-shot) no system prompt, com código Python em várias linhas | `agent.py` | ✅ |
+| Ferramenta `python` remove também crases simples à volta do código | `tools.py` | ✅ |
 | README em inglês e detalhado (para o Prof. Zhao) | `README.md` | ✅ |
 | Git: branch `main`, `.gitignore`, `.gitattributes` (LF), GitHub `Carlos28042003/agent-profilling`, autor Carlos Chirindza | — | ✅ |
 
@@ -98,7 +105,7 @@ teste de funcionamento; os do relatório vêm do Linux/GPU.
 ### Como correr
 
 ```bash
-uv run pytest                                   # 14 testes automáticos
+uv run pytest                                   # 16 testes automáticos
 
 for r in 1 2 3; do                              # 3 execuções por modelo
   uv run agentic-profiling configs/ollama.yaml      tasks/smoke.yaml --out traces/week1/llama-run$r
@@ -110,11 +117,56 @@ uv run agentic-summary traces/week1/*           # tabela comparativa
 
 ### Resultados
 
-- `pytest`: **14/14 passam**.
-- Execuções `llama3.2:3b` × 3 e `qwen2.5:3b` × 3: **em curso** (preencher com a saída do `agentic-summary`).
+`pytest`: **16/16 passam**.
 
-Critério para dar a Semana 1 por fechada: pelo menos um modelo resolve as 5 tarefas de forma
-estável (≥ 4/5 em cada execução) e os traces têm tokens e `cached_tokens` em todos os passos.
+Três rondas, 3 execuções × 2 modelos cada (5 tarefas, `temperature 0`, `seed 0`, GTX 1650).
+Acertos com a avaliação corrigida ("London" não conta como país):
+
+| Ronda | Pasta (local) | llama3.2:3b | qwen2.5:3b | Passos truncados |
+|---|---|---|---|---|
+| A. Contexto 4096 (padrão Ollama) | `traces/week1-ctx4k` | 3, 4, 4 | 3, 2, 2 | até 3 por execução |
+| B. Contexto 8192 | `traces/week1-ctx8k` | 3, 3, 2 | 4, 2, 2 | 0 |
+| C. Contexto 8192 + exemplo resolvido | `traces/week1` | **4, 3, 4** | 3, 3, 3 | 0 |
+
+Ronda C (final), por execução:
+
+| | llama r1 | llama r2 | llama r3 | qwen r1 | qwen r2 | qwen r3 |
+|---|---|---|---|---|---|---|
+| Acurácia | 0.8 | 0.6 | 0.8 | 0.6 | 0.6 | 0.6 |
+| Tarefas terminadas | 100% | 100% | 100% | 100% | 100% | 100% |
+| Passos (média) | 4.0 | 5.0 | 4.2 | 4.2 | 4.2 | 4.0 |
+| Tempo por tarefa P50 (s) | 20.8 | 27.7 | 21.8 | 21.4 | 20.1 | 19.8 |
+| Tempo no LLM | 93% | 91% | 89% | 87% | 87% | 85% |
+| Tempo em ferramentas | 7% | 9% | 11% | 13% | 13% | 15% |
+| Prefixo repetido (passos ≥ 1) | 80% | 85% | 80% | 82% | 81% | 80% |
+| Tokens servidos do cache (Ollama) | 85% | 89% | 85% | 88% | 86% | 86% |
+
+Por tarefa (ronda C): `search_1`, `calc_1` e `code_1` acertam sempre (6/6); `combo_1` 2/6;
+`multihop_1` 0/6.
+
+### Conclusões da Semana 1
+
+1. **Infraestrutura validada.** Todas as tarefas terminam, nenhum passo truncado, tokens e
+   `cached_tokens` presentes em todos os passos.
+2. **O tempo é quase todo do LLM** (85-93 %); as ferramentas são 7-15 % e o overhead do
+   loop é ~0 %. Numa GPU pequena o LLM domina; na GPU alugada (mais rápida) a fração
+   das ferramentas deve subir — a medir na Semana 4.
+3. **~80 % de cada prompt repete o passo anterior**, e o Ollama já serve ~85 % dos tokens
+   do prompt a partir do cache. É a hipótese central do projeto, confirmada em pequena escala.
+4. **Truncagem de contexto destrói o prefix caching** (ronda A, `code_1`, llama r1): quando o
+   prompt passou os 4096 tokens, o Ollama cortou o início da conversa; os tokens em cache
+   caíram de 3102 para 5 e o TTFT subiu de 6.1 s para 26.8 s (**4.4×**), e o agente perdeu a
+   pergunta. Ligação direta à otimização da Semana 5 (truncar contexto vs. custo).
+5. **O exemplo resolvido no prompt (ronda C) foi a maior melhoria:** `code_1` de 0/6 para 6/6
+   e 100 % das tarefas terminadas (antes 80 %). No llama o tempo P50 por tarefa caiu de
+   ~45 s para ~22 s (menos passos); no qwen ficou igual ou um pouco pior (~17 s → ~20 s).
+6. **Critério "≥ 4/5 em todas as execuções" não foi atingido** (melhor: llama 4, 3, 4). As
+   falhas restantes são de raciocínio dos modelos de 3B: no multi-hop desviam-se para
+   páginas parecidas (Wally Pfister, "Christopher Nolan (author)", poeta irlandês); no
+   `combo_1` o Qwen usa um ano errado (2010). Decisão: aceitar a Semana 1 como fechada e
+   usar um modelo 7-8B nas Semanas 2+ (problema #2).
+7. **`temperature 0` + `seed` não garante execuções iguais** no Ollama: as 3 execuções da
+   mesma ronda dão respostas diferentes. Reportar sempre médias de várias execuções.
 
 ---
 
@@ -123,10 +175,10 @@ estável (≥ 4/5 em cada execução) e os traces têm tokens e `cached_tokens` 
 | # | Problema | Impacto | O que fazer |
 |---|---|---|---|
 | 1 | `pip install vllm` falha no Windows (long paths / sem suporte) | Bloqueava o vLLM | **Resolvido com a mudança para Linux.** Instalar em venv separado (ver `requirements/gpu.txt`) |
-| 2 | Acurácia instável com `llama3.2:3b`: 3/5 nas duas execuções, mas não sempre as mesmas tarefas | Modelo repete buscas até `max_steps=8` | **Mitigado:** proteção contra repetição + aviso de último passo; comparação com `qwen2.5:3b` em curso. Para os resultados finais: modelo 7-8B |
-| 3 | Busca de texto completo da Wikipedia é fraca com frases ("Christopher Nolan birthplace" devolve Christopher Plummer) | Falhas em multi-hop | Para HotpotQA, considerar ferramenta `lookup[termo]` dentro da página atual (como no paper ReAct) |
+| 2 | Acurácia limitada dos modelos de 3B (melhor: 4, 3, 4 de 5); multi-hop falha sempre | Resultados de acurácia pouco representativos | **Mitigado** (repetição bloqueada, aviso de último passo, exemplo resolvido). Semanas 2+: `qwen2.5:7b` no Ollama (parte em RAM) ou 7-8B na GPU alugada |
+| 3 | Busca de texto completo da Wikipedia é fraca com frases ("Christopher Nolan birthplace" devolve Christopher Plummer); os excertos dos outros resultados distraem os modelos pequenos (Wally Pfister, Nolan poeta irlandês) | Falhas em multi-hop | Para HotpotQA: ferramenta `lookup[termo]` dentro da página atual (como no paper ReAct) e testar sem os excertos extra |
 | 4 | Ferramenta `python` não é sandbox de segurança | Risco com código não confiável | No Linux: correr em `docker run --rm --network none` antes de usar SWE-bench |
-| 5 | Verificação da resposta é por substring (`"23"` também acerta `"2023"`) | Acurácia pode ser inflacionada | Usar exact match normalizado (HotpotQA) e comparação numérica (GSM8K) |
+| 5 | Verificação da resposta é por substring (`"23"` também acerta `"2023"`). **Aconteceu:** "London" deu como certa uma resposta sobre o Michael Caine | Acurácia inflacionada | "London" removido do `smoke.yaml`. Semana 2: exact match normalizado (HotpotQA) e comparação numérica (GSM8K) |
 | 6 | `cached_tokens` do Ollama ≠ semântica do vLLM | Comparações entre servidores | Calcular o prefixo repetido também offline, re-tokenizando `messages` com o tokenizer do modelo (`transformers`) |
 | 7 | Servidores sem `stream_options.include_usage` devolvem `prompt_tokens = null` | Falta de tokens no trace | Fallback: contar com o tokenizer |
 | 8 | ~~Sem testes automáticos~~ | — | **Resolvido:** `tests/`, 14 testes |
@@ -135,6 +187,8 @@ estável (≥ 4/5 em cada execução) e os traces têm tokens e `cached_tokens` 
 | 11 | Nome do repositório no GitHub tem um erro (`agent-profilling`, dois "l") | Aparece no link enviado ao professor | Renomear em *Settings* para `agentic-profiling` e `git remote set-url` |
 | 12 | No PowerShell 5.1, `echo "..." >> ficheiro` escreve em UTF-16 (estragou o README uma vez) | Ficheiros corrompidos no GitHub | Editar no VS Code, ou `Add-Content -Encoding utf8` |
 | 13 | No Windows, `uv sync` falha se o `agentic-profiling.exe` estiver a correr (ficheiro bloqueado) | — | Correr `uv sync` só sem execuções ativas |
+| 14 | ~~Ollama trunca o contexto aos 4096 tokens sem avisar~~ | Perde a pergunta e o cache (TTFT 4.4×) | **Resolvido:** Modelfiles com `num_ctx 8192` + deteção automática no `agentic-summary`. No vLLM: definir `--max-model-len` |
+| 15 | Os traces ficam só no computador local (`traces/` está no `.gitignore`) | Perde-se a evidência se o disco falhar | Antes do relatório: copiar os traces finais para `results/` (comprimidos) e fazer commit |
 
 ---
 
