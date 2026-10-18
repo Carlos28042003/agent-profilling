@@ -1,0 +1,1355 @@
+{
+  "updated": "2026-10-18",
+  "experiments": [
+    {
+      "id": "week1-a-ctx4k",
+      "title": "Week 1 · 4k context (truncation)",
+      "description": "Smoke test, 5 tasks × 3 runs × 2 models, Ollama on a GTX 1650 (4 GB), default 4096-token context. In code_1 the history outgrew the context at step 5: Ollama silently cut the start of the conversation, cached tokens fell from 3,102 to 5 and TTFT rose from 6.1 s to 26.8 s (4.4×). Accuracy here is as originally graded (London accepted).",
+      "exported": "2026-10-18",
+      "runs": [
+        {
+          "run": "llama-run1",
+          "model": "llama3.2:3b",
+          "accuracy": 0.6,
+          "finished": 0.8,
+          "steps_mean": 7.0,
+          "task_s_p50": 48.54,
+          "task_s_max": 315.09,
+          "llm_%": 94.71,
+          "tool_%": 5.29,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 6.28,
+          "prompt_tok_max": 3768,
+          "truncated_steps": 3,
+          "prefix_reuse_%": 80.72,
+          "cached_tok_%": 64.93
+        },
+        {
+          "run": "llama-run2",
+          "model": "llama3.2:3b",
+          "accuracy": 1.0,
+          "finished": 1.0,
+          "steps_mean": 6.4,
+          "task_s_p50": 41.43,
+          "task_s_max": 44.72,
+          "llm_%": 87.04,
+          "tool_%": 12.96,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 3.36,
+          "prompt_tok_max": 2098,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 81.04,
+          "cached_tok_%": 84.55
+        },
+        {
+          "run": "llama-run3",
+          "model": "llama3.2:3b",
+          "accuracy": 1.0,
+          "finished": 1.0,
+          "steps_mean": 6.2,
+          "task_s_p50": 33.04,
+          "task_s_max": 48.45,
+          "llm_%": 85.92,
+          "tool_%": 14.08,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 3.4,
+          "prompt_tok_max": 2369,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 80.08,
+          "cached_tok_%": 83.62
+        },
+        {
+          "run": "qwen-run1",
+          "model": "qwen2.5:3b",
+          "accuracy": 0.6,
+          "finished": 0.8,
+          "steps_mean": 4.2,
+          "task_s_p50": 17.0,
+          "task_s_max": 151.84,
+          "llm_%": 95.28,
+          "tool_%": 4.72,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 6.76,
+          "prompt_tok_max": 3984,
+          "truncated_steps": 2,
+          "prefix_reuse_%": 75.56,
+          "cached_tok_%": 62.45
+        },
+        {
+          "run": "qwen-run2",
+          "model": "qwen2.5:3b",
+          "accuracy": 0.4,
+          "finished": 0.8,
+          "steps_mean": 4.4,
+          "task_s_p50": 16.69,
+          "task_s_max": 160.1,
+          "llm_%": 90.44,
+          "tool_%": 9.56,
+          "overhead_%": 0.01,
+          "ttft_mean_s": 4.76,
+          "prompt_tok_max": 3984,
+          "truncated_steps": 2,
+          "prefix_reuse_%": 74.08,
+          "cached_tok_%": 74.65
+        },
+        {
+          "run": "qwen-run3",
+          "model": "qwen2.5:3b",
+          "accuracy": 0.4,
+          "finished": 0.8,
+          "steps_mean": 4.2,
+          "task_s_p50": 18.12,
+          "task_s_max": 55.14,
+          "llm_%": 90.84,
+          "tool_%": 9.14,
+          "overhead_%": 0.02,
+          "ttft_mean_s": 3.2,
+          "prompt_tok_max": 1467,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 76.57,
+          "cached_tok_%": 84.87
+        }
+      ],
+      "per_task": {
+        "calc_1": {
+          "llama-run1": 1,
+          "llama-run2": 1,
+          "llama-run3": 1,
+          "qwen-run1": 1,
+          "qwen-run2": 1,
+          "qwen-run3": 1
+        },
+        "code_1": {
+          "llama-run1": 0,
+          "llama-run2": 1,
+          "llama-run3": 1,
+          "qwen-run1": 0,
+          "qwen-run2": 0,
+          "qwen-run3": 0
+        },
+        "combo_1": {
+          "llama-run1": 0,
+          "llama-run2": 1,
+          "llama-run3": 1,
+          "qwen-run1": 1,
+          "qwen-run2": 0,
+          "qwen-run3": 0
+        },
+        "multihop_1": {
+          "llama-run1": 1,
+          "llama-run2": 1,
+          "llama-run3": 1,
+          "qwen-run1": 0,
+          "qwen-run2": 0,
+          "qwen-run3": 0
+        },
+        "search_1": {
+          "llama-run1": 1,
+          "llama-run2": 1,
+          "llama-run3": 1,
+          "qwen-run1": 1,
+          "qwen-run2": 1,
+          "qwen-run3": 1
+        }
+      },
+      "example": {
+        "run": "llama-run1",
+        "task_id": "code_1",
+        "question": "What is the sum of all prime numbers below 1000?",
+        "answer": null,
+        "correct": false,
+        "model": "llama3.2:3b",
+        "steps": [
+          {
+            "index": 0,
+            "tool": "search",
+            "llm_ttft_s": 2.4490783,
+            "llm_generation_s": 1.4958326,
+            "tool_s": 2.5094749,
+            "prompt_tokens": 246,
+            "completion_tokens": 50,
+            "cached_tokens": 230,
+            "truncated": false
+          },
+          {
+            "index": 1,
+            "tool": "python",
+            "llm_ttft_s": 6.3486122,
+            "llm_generation_s": 36.4753125,
+            "tool_s": 0.2578868,
+            "prompt_tokens": 560,
+            "completion_tokens": 512,
+            "cached_tokens": 292,
+            "truncated": false
+          },
+          {
+            "index": 2,
+            "tool": "python",
+            "llm_ttft_s": 5.4285713,
+            "llm_generation_s": 51.5584828,
+            "tool_s": 0.4862445,
+            "prompt_tokens": 1573,
+            "completion_tokens": 512,
+            "cached_tokens": 1071,
+            "truncated": false
+          },
+          {
+            "index": 3,
+            "tool": "python",
+            "llm_ttft_s": 5.8036986,
+            "llm_generation_s": 38.5416112,
+            "tool_s": 0.0703232,
+            "prompt_tokens": 2591,
+            "completion_tokens": 512,
+            "cached_tokens": 2084,
+            "truncated": false
+          },
+          {
+            "index": 4,
+            "tool": "python",
+            "llm_ttft_s": 6.0862965,
+            "llm_generation_s": 22.2691997,
+            "tool_s": 0.0612816,
+            "prompt_tokens": 3612,
+            "completion_tokens": 512,
+            "cached_tokens": 3102,
+            "truncated": false
+          },
+          {
+            "index": 5,
+            "tool": "python",
+            "llm_ttft_s": 26.8450597,
+            "llm_generation_s": 22.0199461,
+            "tool_s": 0.0608355,
+            "prompt_tokens": 3768,
+            "completion_tokens": 512,
+            "cached_tokens": 5,
+            "truncated": true
+          },
+          {
+            "index": 6,
+            "tool": "python",
+            "llm_ttft_s": 26.8042242,
+            "llm_generation_s": 16.7984793,
+            "tool_s": 0.1059403,
+            "prompt_tokens": 3758,
+            "completion_tokens": 370,
+            "cached_tokens": 5,
+            "truncated": true
+          },
+          {
+            "index": 7,
+            "tool": "python",
+            "llm_ttft_s": 26.234781,
+            "llm_generation_s": 16.3036675,
+            "tool_s": 0.0692105,
+            "prompt_tokens": 3701,
+            "completion_tokens": 350,
+            "cached_tokens": 5,
+            "truncated": true
+          }
+        ]
+      },
+      "stats": {
+        "llama-run1": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 0.8,
+          "steps_mean": 7.0,
+          "steps_median": 8.0,
+          "task_s_p50": 48.5,
+          "task_s_p95": 265.4,
+          "time_split_%": {
+            "prefill (TTFT)": 45.5,
+            "decode": 49.3,
+            "tools": 5.3,
+            "overhead": 0.0
+          },
+          "llm_calls": 35,
+          "prompt_tokens_mean": 1492.0,
+          "prompt_tokens_max": 3768,
+          "context_growth_tokens_per_step": 278.0,
+          "repeated_prefix_%_all_calls": 84.9,
+          "repeated_prefix_%_steps_ge1": 87.0,
+          "cached_%_all_calls": 65.1,
+          "truncated_steps": 3
+        },
+        "llama-run2": {
+          "tasks": 5,
+          "accuracy": 1.0,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 6.4,
+          "steps_median": 7.0,
+          "task_s_p50": 41.4,
+          "task_s_p95": 44.1,
+          "time_split_%": {
+            "prefill (TTFT)": 64.3,
+            "decode": 22.8,
+            "tools": 13.0,
+            "overhead": 0.0
+          },
+          "llm_calls": 32,
+          "prompt_tokens_mean": 1104.0,
+          "prompt_tokens_max": 2098,
+          "context_growth_tokens_per_step": 250.0,
+          "repeated_prefix_%_all_calls": 81.7,
+          "repeated_prefix_%_steps_ge1": 84.6,
+          "cached_%_all_calls": 84.8,
+          "truncated_steps": 0
+        },
+        "llama-run3": {
+          "tasks": 5,
+          "accuracy": 1.0,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 6.2,
+          "steps_median": 6.0,
+          "task_s_p50": 33.0,
+          "task_s_p95": 47.0,
+          "time_split_%": {
+            "prefill (TTFT)": 65.0,
+            "decode": 21.0,
+            "tools": 14.1,
+            "overhead": 0.0
+          },
+          "llm_calls": 31,
+          "prompt_tokens_mean": 1068.0,
+          "prompt_tokens_max": 2369,
+          "context_growth_tokens_per_step": 255.0,
+          "repeated_prefix_%_all_calls": 80.6,
+          "repeated_prefix_%_steps_ge1": 83.7,
+          "cached_%_all_calls": 84.0,
+          "truncated_steps": 0
+        },
+        "qwen-run1": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 0.8,
+          "steps_mean": 4.2,
+          "steps_median": 4.0,
+          "task_s_p50": 17.0,
+          "task_s_p95": 133.0,
+          "time_split_%": {
+            "prefill (TTFT)": 56.0,
+            "decode": 39.2,
+            "tools": 4.7,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 1251.0,
+          "prompt_tokens_max": 3984,
+          "context_growth_tokens_per_step": 608.0,
+          "repeated_prefix_%_all_calls": 83.6,
+          "repeated_prefix_%_steps_ge1": 87.5,
+          "cached_%_all_calls": 62.9,
+          "truncated_steps": 2
+        },
+        "qwen-run2": {
+          "tasks": 5,
+          "accuracy": 0.4,
+          "f1": null,
+          "finished": 0.8,
+          "steps_mean": 4.4,
+          "steps_median": 4.0,
+          "task_s_p50": 16.7,
+          "task_s_p95": 133.4,
+          "time_split_%": {
+            "prefill (TTFT)": 45.4,
+            "decode": 45.0,
+            "tools": 9.6,
+            "overhead": 0.0
+          },
+          "llm_calls": 22,
+          "prompt_tokens_mean": 1315.0,
+          "prompt_tokens_max": 3984,
+          "context_growth_tokens_per_step": 576.0,
+          "repeated_prefix_%_all_calls": 81.7,
+          "repeated_prefix_%_steps_ge1": 85.2,
+          "cached_%_all_calls": 75.4,
+          "truncated_steps": 2
+        },
+        "qwen-run3": {
+          "tasks": 5,
+          "accuracy": 0.4,
+          "f1": null,
+          "finished": 0.8,
+          "steps_mean": 4.2,
+          "steps_median": 3.0,
+          "task_s_p50": 18.1,
+          "task_s_p95": 48.8,
+          "time_split_%": {
+            "prefill (TTFT)": 57.9,
+            "decode": 32.9,
+            "tools": 9.1,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 712.0,
+          "prompt_tokens_max": 1467,
+          "context_growth_tokens_per_step": 159.0,
+          "repeated_prefix_%_all_calls": 78.3,
+          "repeated_prefix_%_steps_ge1": 85.0,
+          "cached_%_all_calls": 85.6,
+          "truncated_steps": 0
+        }
+      },
+      "growth": {
+        "llama-run1": [
+          {
+            "step": 0,
+            "p25": 246,
+            "p50": 247,
+            "p75": 248,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 560,
+            "p50": 584,
+            "p75": 606,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 947,
+            "p50": 1049,
+            "p75": 1095,
+            "n": 5
+          }
+        ],
+        "llama-run2": [
+          {
+            "step": 0,
+            "p25": 246,
+            "p50": 247,
+            "p75": 248,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 556,
+            "p50": 584,
+            "p75": 606,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 647,
+            "p50": 931,
+            "p75": 1049,
+            "n": 5
+          }
+        ],
+        "llama-run3": [
+          {
+            "step": 0,
+            "p25": 246,
+            "p50": 247,
+            "p75": 248,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 556,
+            "p50": 584,
+            "p75": 606,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 647,
+            "p50": 931,
+            "p75": 1049,
+            "n": 5
+          }
+        ],
+        "qwen-run1": [
+          {
+            "step": 0,
+            "p25": 236,
+            "p50": 236,
+            "p75": 236,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 559,
+            "p50": 584,
+            "p75": 629,
+            "n": 5
+          }
+        ],
+        "qwen-run2": [
+          {
+            "step": 0,
+            "p25": 236,
+            "p50": 236,
+            "p75": 236,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 559,
+            "p50": 584,
+            "p75": 629,
+            "n": 5
+          }
+        ],
+        "qwen-run3": [
+          {
+            "step": 0,
+            "p25": 236,
+            "p50": 236,
+            "p75": 236,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 559,
+            "p50": 584,
+            "p75": 607,
+            "n": 5
+          }
+        ]
+      },
+      "reuse_by_step": {
+        "llama-run1": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 73.7
+          },
+          {
+            "step": 1,
+            "reuse_pct": 52.1,
+            "cached_pct": 51.7
+          },
+          {
+            "step": 2,
+            "reuse_pct": 67.0,
+            "cached_pct": 66.9
+          }
+        ],
+        "llama-run2": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 92.6
+          },
+          {
+            "step": 1,
+            "reuse_pct": 52.5,
+            "cached_pct": 52.0
+          },
+          {
+            "step": 2,
+            "reuse_pct": 70.8,
+            "cached_pct": 70.7
+          }
+        ],
+        "llama-run3": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 92.6
+          },
+          {
+            "step": 1,
+            "reuse_pct": 51.9,
+            "cached_pct": 51.5
+          },
+          {
+            "step": 2,
+            "reuse_pct": 71.0,
+            "cached_pct": 70.9
+          }
+        ],
+        "qwen-run1": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 73.3
+          },
+          {
+            "step": 1,
+            "reuse_pct": 53.1,
+            "cached_pct": 52.9
+          }
+        ],
+        "qwen-run2": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 91.7
+          },
+          {
+            "step": 1,
+            "reuse_pct": 53.1,
+            "cached_pct": 52.9
+          }
+        ],
+        "qwen-run3": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 93.8
+          },
+          {
+            "step": 1,
+            "reuse_pct": 53.7,
+            "cached_pct": 53.5
+          }
+        ]
+      },
+      "latency": {
+        "llama-run1": [
+          10.14,
+          43.22,
+          48.54,
+          66.59,
+          315.09
+        ],
+        "llama-run2": [
+          9.49,
+          30.12,
+          41.43,
+          41.58,
+          44.72
+        ],
+        "llama-run3": [
+          9.45,
+          29.92,
+          33.04,
+          41.19,
+          48.45
+        ],
+        "qwen-run1": [
+          12.86,
+          14.19,
+          17.0,
+          57.67,
+          151.84
+        ],
+        "qwen-run2": [
+          12.87,
+          14.53,
+          16.69,
+          26.48,
+          160.1
+        ],
+        "qwen-run3": [
+          8.6,
+          10.65,
+          18.12,
+          23.43,
+          55.14
+        ]
+      },
+      "time_split": {
+        "llama-run1": {
+          "prefill (TTFT)": 45.5,
+          "decode": 49.3,
+          "tools": 5.3,
+          "overhead": 0.0
+        },
+        "llama-run2": {
+          "prefill (TTFT)": 64.3,
+          "decode": 22.8,
+          "tools": 13.0,
+          "overhead": 0.0
+        },
+        "llama-run3": {
+          "prefill (TTFT)": 65.0,
+          "decode": 21.0,
+          "tools": 14.1,
+          "overhead": 0.0
+        },
+        "qwen-run1": {
+          "prefill (TTFT)": 56.0,
+          "decode": 39.2,
+          "tools": 4.7,
+          "overhead": 0.0
+        },
+        "qwen-run2": {
+          "prefill (TTFT)": 45.4,
+          "decode": 45.0,
+          "tools": 9.6,
+          "overhead": 0.0
+        },
+        "qwen-run3": {
+          "prefill (TTFT)": 57.9,
+          "decode": 32.9,
+          "tools": 9.1,
+          "overhead": 0.0
+        }
+      }
+    },
+    {
+      "id": "week1-c-final",
+      "title": "Week 1 · final (8k context + worked example)",
+      "description": "Smoke test, 5 tasks × 3 runs × 2 models, Ollama on a GTX 1650 (4 GB), 8192-token context and a worked example in the system prompt. About 80% of every prompt repeats the previous step and Ollama serves about 85% of prompt tokens from its cache; the LLM takes 85-93% of the time.",
+      "exported": "2026-10-18",
+      "runs": [
+        {
+          "run": "llama-run1",
+          "model": "llama3.2:3b-ctx8k",
+          "accuracy": 0.8,
+          "finished": 1.0,
+          "steps_mean": 4.0,
+          "task_s_p50": 20.79,
+          "task_s_max": 50.8,
+          "llm_%": 92.79,
+          "tool_%": 7.21,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 4.4,
+          "prompt_tok_max": 1612,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 80.14,
+          "cached_tok_%": 85.02
+        },
+        {
+          "run": "llama-run2",
+          "model": "llama3.2:3b-ctx8k",
+          "accuracy": 0.6,
+          "finished": 1.0,
+          "steps_mean": 5.0,
+          "task_s_p50": 27.71,
+          "task_s_max": 49.38,
+          "llm_%": 91.39,
+          "tool_%": 8.61,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 3.21,
+          "prompt_tok_max": 2037,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 84.8,
+          "cached_tok_%": 88.79
+        },
+        {
+          "run": "llama-run3",
+          "model": "llama3.2:3b-ctx8k",
+          "accuracy": 0.8,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "task_s_p50": 21.75,
+          "task_s_max": 43.19,
+          "llm_%": 89.45,
+          "tool_%": 10.55,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 3.47,
+          "prompt_tok_max": 1918,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 80.26,
+          "cached_tok_%": 85.18
+        },
+        {
+          "run": "qwen-run1",
+          "model": "qwen2.5:3b-ctx8k",
+          "accuracy": 0.6,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "task_s_p50": 21.43,
+          "task_s_max": 41.51,
+          "llm_%": 86.58,
+          "tool_%": 13.41,
+          "overhead_%": 0.01,
+          "ttft_mean_s": 3.71,
+          "prompt_tok_max": 2022,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 82.0,
+          "cached_tok_%": 87.66
+        },
+        {
+          "run": "qwen-run2",
+          "model": "qwen2.5:3b-ctx8k",
+          "accuracy": 0.6,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "task_s_p50": 20.12,
+          "task_s_max": 40.66,
+          "llm_%": 87.15,
+          "tool_%": 12.84,
+          "overhead_%": 0.01,
+          "ttft_mean_s": 3.24,
+          "prompt_tok_max": 2352,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 81.44,
+          "cached_tok_%": 86.49
+        },
+        {
+          "run": "qwen-run3",
+          "model": "qwen2.5:3b-ctx8k",
+          "accuracy": 0.6,
+          "finished": 1.0,
+          "steps_mean": 4.0,
+          "task_s_p50": 19.83,
+          "task_s_max": 42.44,
+          "llm_%": 85.45,
+          "tool_%": 14.55,
+          "overhead_%": 0.01,
+          "ttft_mean_s": 3.27,
+          "prompt_tok_max": 1988,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 79.59,
+          "cached_tok_%": 85.99
+        }
+      ],
+      "per_task": {
+        "calc_1": {
+          "llama-run1": 1,
+          "llama-run2": 1,
+          "llama-run3": 1,
+          "qwen-run1": 1,
+          "qwen-run2": 1,
+          "qwen-run3": 1
+        },
+        "code_1": {
+          "llama-run1": 1,
+          "llama-run2": 1,
+          "llama-run3": 1,
+          "qwen-run1": 1,
+          "qwen-run2": 1,
+          "qwen-run3": 1
+        },
+        "combo_1": {
+          "llama-run1": 1,
+          "llama-run2": 0,
+          "llama-run3": 1,
+          "qwen-run1": 0,
+          "qwen-run2": 0,
+          "qwen-run3": 0
+        },
+        "multihop_1": {
+          "llama-run1": 0,
+          "llama-run2": 0,
+          "llama-run3": 0,
+          "qwen-run1": 0,
+          "qwen-run2": 0,
+          "qwen-run3": 0
+        },
+        "search_1": {
+          "llama-run1": 1,
+          "llama-run2": 1,
+          "llama-run3": 1,
+          "qwen-run1": 1,
+          "qwen-run2": 1,
+          "qwen-run3": 1
+        }
+      },
+      "example": {
+        "run": "llama-run3",
+        "task_id": "search_1",
+        "question": "In which year was the Eiffel Tower completed?",
+        "answer": "1889",
+        "correct": true,
+        "model": "llama3.2:3b-ctx8k",
+        "steps": [
+          {
+            "index": 0,
+            "tool": "search",
+            "llm_ttft_s": 2.5082873,
+            "llm_generation_s": 1.3561113,
+            "tool_s": 1.3771092,
+            "prompt_tokens": 515,
+            "completion_tokens": 33,
+            "cached_tokens": 514,
+            "truncated": false
+          },
+          {
+            "index": 1,
+            "tool": "search",
+            "llm_ttft_s": 4.7049412,
+            "llm_generation_s": 1.4505807,
+            "tool_s": 1.4618711,
+            "prompt_tokens": 903,
+            "completion_tokens": 34,
+            "cached_tokens": 544,
+            "truncated": false
+          },
+          {
+            "index": 2,
+            "tool": "search",
+            "llm_ttft_s": 4.4936913,
+            "llm_generation_s": 2.0689884,
+            "tool_s": 1.9316589,
+            "prompt_tokens": 1248,
+            "completion_tokens": 44,
+            "cached_tokens": 936,
+            "truncated": false
+          },
+          {
+            "index": 3,
+            "tool": "python",
+            "llm_ttft_s": 5.6060068,
+            "llm_generation_s": 5.0679991,
+            "tool_s": 0.0823016,
+            "prompt_tokens": 1687,
+            "completion_tokens": 96,
+            "cached_tokens": 1291,
+            "truncated": false
+          },
+          {
+            "index": 4,
+            "tool": "python",
+            "llm_ttft_s": 2.5411539,
+            "llm_generation_s": 4.6170502,
+            "tool_s": 1.6e-06,
+            "prompt_tokens": 1795,
+            "completion_tokens": 86,
+            "cached_tokens": 1779,
+            "truncated": false
+          },
+          {
+            "index": 5,
+            "tool": null,
+            "llm_ttft_s": 2.7789159,
+            "llm_generation_s": 1.1430852,
+            "tool_s": 0.0,
+            "prompt_tokens": 1918,
+            "completion_tokens": 22,
+            "cached_tokens": 1877,
+            "truncated": false
+          }
+        ]
+      },
+      "stats": {
+        "llama-run1": {
+          "tasks": 5,
+          "accuracy": 0.8,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.0,
+          "steps_median": 4.0,
+          "task_s_p50": 20.8,
+          "task_s_p95": 47.0,
+          "time_split_%": {
+            "prefill (TTFT)": 66.9,
+            "decode": 25.9,
+            "tools": 7.2,
+            "overhead": 0.0
+          },
+          "llm_calls": 20,
+          "prompt_tokens_mean": 934.0,
+          "prompt_tokens_max": 1612,
+          "context_growth_tokens_per_step": 251.0,
+          "repeated_prefix_%_all_calls": 73.4,
+          "repeated_prefix_%_steps_ge1": 85.2,
+          "cached_%_all_calls": 83.9,
+          "truncated_steps": 0
+        },
+        "llama-run2": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 5.0,
+          "steps_median": 5.0,
+          "task_s_p50": 27.7,
+          "task_s_p95": 46.2,
+          "time_split_%": {
+            "prefill (TTFT)": 57.4,
+            "decode": 34.0,
+            "tools": 8.6,
+            "overhead": 0.0
+          },
+          "llm_calls": 25,
+          "prompt_tokens_mean": 1097.0,
+          "prompt_tokens_max": 2037,
+          "context_growth_tokens_per_step": 210.0,
+          "repeated_prefix_%_all_calls": 80.5,
+          "repeated_prefix_%_steps_ge1": 88.9,
+          "cached_%_all_calls": 89.6,
+          "truncated_steps": 0
+        },
+        "llama-run3": {
+          "tasks": 5,
+          "accuracy": 0.8,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "steps_median": 4.0,
+          "task_s_p50": 21.7,
+          "task_s_p95": 41.1,
+          "time_split_%": {
+            "prefill (TTFT)": 56.0,
+            "decode": 33.5,
+            "tools": 10.6,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 1012.0,
+          "prompt_tokens_max": 1918,
+          "context_growth_tokens_per_step": 284.0,
+          "repeated_prefix_%_all_calls": 75.0,
+          "repeated_prefix_%_steps_ge1": 85.3,
+          "cached_%_all_calls": 86.7,
+          "truncated_steps": 0
+        },
+        "qwen-run1": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "steps_median": 4.0,
+          "task_s_p50": 21.4,
+          "task_s_p95": 39.8,
+          "time_split_%": {
+            "prefill (TTFT)": 63.3,
+            "decode": 23.3,
+            "tools": 13.4,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 1039.0,
+          "prompt_tokens_max": 2022,
+          "context_growth_tokens_per_step": 212.0,
+          "repeated_prefix_%_all_calls": 77.0,
+          "repeated_prefix_%_steps_ge1": 87.8,
+          "cached_%_all_calls": 86.4,
+          "truncated_steps": 0
+        },
+        "qwen-run2": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.2,
+          "steps_median": 4.0,
+          "task_s_p50": 20.1,
+          "task_s_p95": 38.8,
+          "time_split_%": {
+            "prefill (TTFT)": 62.6,
+            "decode": 24.5,
+            "tools": 12.8,
+            "overhead": 0.0
+          },
+          "llm_calls": 21,
+          "prompt_tokens_mean": 1089.0,
+          "prompt_tokens_max": 2352,
+          "context_growth_tokens_per_step": 262.0,
+          "repeated_prefix_%_all_calls": 76.5,
+          "repeated_prefix_%_steps_ge1": 86.6,
+          "cached_%_all_calls": 87.7,
+          "truncated_steps": 0
+        },
+        "qwen-run3": {
+          "tasks": 5,
+          "accuracy": 0.6,
+          "f1": null,
+          "finished": 1.0,
+          "steps_mean": 4.0,
+          "steps_median": 4.0,
+          "task_s_p50": 19.8,
+          "task_s_p95": 40.3,
+          "time_split_%": {
+            "prefill (TTFT)": 59.2,
+            "decode": 26.3,
+            "tools": 14.5,
+            "overhead": 0.0
+          },
+          "llm_calls": 20,
+          "prompt_tokens_mean": 980.0,
+          "prompt_tokens_max": 1988,
+          "context_growth_tokens_per_step": 214.0,
+          "repeated_prefix_%_all_calls": 74.4,
+          "repeated_prefix_%_steps_ge1": 86.1,
+          "cached_%_all_calls": 87.5,
+          "truncated_steps": 0
+        }
+      },
+      "growth": {
+        "llama-run1": [
+          {
+            "step": 0,
+            "p25": 517,
+            "p50": 518,
+            "p75": 519,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 629,
+            "p50": 851,
+            "p75": 898,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 764,
+            "p50": 1162,
+            "p75": 1222,
+            "n": 5
+          }
+        ],
+        "llama-run2": [
+          {
+            "step": 0,
+            "p25": 517,
+            "p50": 518,
+            "p75": 519,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 629,
+            "p50": 856,
+            "p75": 882,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 764,
+            "p50": 1167,
+            "p75": 1206,
+            "n": 5
+          }
+        ],
+        "llama-run3": [
+          {
+            "step": 0,
+            "p25": 517,
+            "p50": 518,
+            "p75": 519,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 629,
+            "p50": 851,
+            "p75": 898,
+            "n": 5
+          },
+          {
+            "step": 2,
+            "p25": 764,
+            "p50": 1162,
+            "p75": 1225,
+            "n": 5
+          }
+        ],
+        "qwen-run1": [
+          {
+            "step": 0,
+            "p25": 535,
+            "p50": 535,
+            "p75": 535,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 626,
+            "p50": 840,
+            "p75": 888,
+            "n": 5
+          }
+        ],
+        "qwen-run2": [
+          {
+            "step": 0,
+            "p25": 535,
+            "p50": 535,
+            "p75": 535,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 626,
+            "p50": 817,
+            "p75": 888,
+            "n": 5
+          }
+        ],
+        "qwen-run3": [
+          {
+            "step": 0,
+            "p25": 535,
+            "p50": 535,
+            "p75": 535,
+            "n": 5
+          },
+          {
+            "step": 1,
+            "p25": 626,
+            "p50": 840,
+            "p75": 888,
+            "n": 5
+          }
+        ]
+      },
+      "reuse_by_step": {
+        "llama-run1": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 77.2
+          },
+          {
+            "step": 1,
+            "reuse_pct": 72.3,
+            "cached_pct": 71.9
+          },
+          {
+            "step": 2,
+            "reuse_pct": 81.3,
+            "cached_pct": 81.2
+          }
+        ],
+        "llama-run2": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 97.2
+          },
+          {
+            "step": 1,
+            "reuse_pct": 72.5,
+            "cached_pct": 72.1
+          },
+          {
+            "step": 2,
+            "reuse_pct": 81.3,
+            "cached_pct": 81.2
+          }
+        ],
+        "llama-run3": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 97.8
+          },
+          {
+            "step": 1,
+            "reuse_pct": 72.8,
+            "cached_pct": 72.4
+          },
+          {
+            "step": 2,
+            "reuse_pct": 81.6,
+            "cached_pct": 81.5
+          }
+        ],
+        "qwen-run1": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 77.0
+          },
+          {
+            "step": 1,
+            "reuse_pct": 73.2,
+            "cached_pct": 73.0
+          }
+        ],
+        "qwen-run2": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 97.0
+          },
+          {
+            "step": 1,
+            "reuse_pct": 73.7,
+            "cached_pct": 73.5
+          }
+        ],
+        "qwen-run3": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 97.0
+          },
+          {
+            "step": 1,
+            "reuse_pct": 73.2,
+            "cached_pct": 73.0
+          }
+        ]
+      },
+      "latency": {
+        "llama-run1": [
+          11.5,
+          16.58,
+          20.79,
+          31.82,
+          50.8
+        ],
+        "llama-run2": [
+          11.66,
+          17.4,
+          27.71,
+          33.5,
+          49.38
+        ],
+        "llama-run3": [
+          11.81,
+          20.96,
+          21.75,
+          32.57,
+          43.19
+        ],
+        "qwen-run1": [
+          6.17,
+          20.95,
+          21.43,
+          33.12,
+          41.51
+        ],
+        "qwen-run2": [
+          6.15,
+          10.4,
+          20.12,
+          31.35,
+          40.66
+        ],
+        "qwen-run3": [
+          6.12,
+          10.27,
+          19.83,
+          31.86,
+          42.44
+        ]
+      },
+      "time_split": {
+        "llama-run1": {
+          "prefill (TTFT)": 66.9,
+          "decode": 25.9,
+          "tools": 7.2,
+          "overhead": 0.0
+        },
+        "llama-run2": {
+          "prefill (TTFT)": 57.4,
+          "decode": 34.0,
+          "tools": 8.6,
+          "overhead": 0.0
+        },
+        "llama-run3": {
+          "prefill (TTFT)": 56.0,
+          "decode": 33.5,
+          "tools": 10.6,
+          "overhead": 0.0
+        },
+        "qwen-run1": {
+          "prefill (TTFT)": 63.3,
+          "decode": 23.3,
+          "tools": 13.4,
+          "overhead": 0.0
+        },
+        "qwen-run2": {
+          "prefill (TTFT)": 62.6,
+          "decode": 24.5,
+          "tools": 12.8,
+          "overhead": 0.0
+        },
+        "qwen-run3": {
+          "prefill (TTFT)": 59.2,
+          "decode": 26.3,
+          "tools": 14.5,
+          "overhead": 0.0
+        }
+      }
+    }
+  ]
+}

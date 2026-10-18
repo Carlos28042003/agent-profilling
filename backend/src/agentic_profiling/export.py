@@ -1,15 +1,14 @@
-"""Export an experiment to results/<name>.json and update DATA on the results page.
+"""Export an experiment to results/<name>.json and rebuild the frontend's data file.
 
     agentic-export week1 traces/week1/* --title "..." --description "..."
-    agentic-export --page-only        # only rebuild DATA in docs/index.html from results/
+    agentic-export --page-only        # only rebuild frontend/src/data.json from results/
 
-The page (docs/index.html) reads everything from the DATA object between the
-DATA:START and DATA:END markers.
+The React frontend imports frontend/src/data.json (all experiments in results/).
+Rebuild the site afterwards: cd ../frontend && npm run build.
 """
 
 import argparse
 import json
-import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -21,10 +20,9 @@ from .analyze import stats as workload_stats
 from .compare import compare
 from .summarize import load_steps, summarize
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[2]  # backend/
 RESULTS = ROOT / "results"
-PAGE = ROOT / "docs" / "index.html"
-DATA_RE = re.compile(r"/\* DATA:START \*/.*?/\* DATA:END \*/", re.DOTALL)
+FRONTEND_DATA = ROOT.parent / "frontend" / "src" / "data.json"
 
 STEP_FIELDS = ["index", "tool", "llm_ttft_s", "llm_generation_s", "tool_s",
                "prompt_tokens", "completion_tokens", "cached_tokens", "truncated"]
@@ -102,18 +100,15 @@ def export(name: str, run_dirs: list[Path], title: str, description: str, exampl
         result["compare"] = json.loads(compare(run_dirs).round(3).to_json(orient="records"))
     RESULTS.mkdir(exist_ok=True)
     out = RESULTS / f"{name}.json"
-    out.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    out.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8", newline="\n")
     return out
 
 
 def update_page() -> int:
     experiments = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(RESULTS.glob("*.json"))]
     data = {"updated": date.today().isoformat(), "experiments": experiments}
-    block = "/* DATA:START */\nconst DATA = " + json.dumps(data, indent=2, ensure_ascii=False) + ";\n/* DATA:END */"
-    html = PAGE.read_text(encoding="utf-8")
-    if not DATA_RE.search(html):
-        sys.exit(f"DATA:START/DATA:END markers not found in {PAGE}")
-    PAGE.write_text(DATA_RE.sub(lambda _: block, html), encoding="utf-8", newline="\n")
+    FRONTEND_DATA.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n",
+                             encoding="utf-8", newline="\n")
     return len(experiments)
 
 
@@ -126,7 +121,7 @@ def main() -> None:
     p.add_argument("--description", default="")
     p.add_argument("--example", help="task for the step chart, as run/task_id")
     p.add_argument("--compare", action="store_true", help="also export the run comparison (Weeks 4-5)")
-    p.add_argument("--page-only", action="store_true", help="only update docs/index.html")
+    p.add_argument("--page-only", action="store_true", help="only rebuild frontend/src/data.json")
     args = p.parse_args()
 
     if not args.page_only:
@@ -136,4 +131,5 @@ def main() -> None:
                      args.compare)
         print(f"Exported: {out.relative_to(ROOT)}")
     n = update_page()
-    print(f"Page updated: {PAGE.relative_to(ROOT)} ({n} experiments)")
+    print(f"Frontend data updated: frontend/src/data.json ({n} experiments). "
+          "Rebuild the site: cd ../frontend && npm run build")

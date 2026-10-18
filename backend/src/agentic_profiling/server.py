@@ -24,9 +24,9 @@ from fastapi.staticfiles import StaticFiles
 from . import llm_from_config, run_meta
 from .agent import run_task
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[2]  # backend/
 CONFIGS = ROOT / "configs"
-DOCS = ROOT / "docs"
+DOCS = ROOT.parent / "docs"  # the built frontend (cd frontend && npm run build)
 ASK_TRACES = ROOT / "traces" / "ask"
 
 app = FastAPI(title="agentic-profiling")
@@ -84,7 +84,12 @@ def ask(question: str = Query(..., min_length=3, max_length=500),
                              headers={"Cache-Control": "no-cache"})
 
 
-app.mount("/", StaticFiles(directory=DOCS, html=True), name="docs")
+if (DOCS / "index.html").exists():
+    app.mount("/", StaticFiles(directory=DOCS, html=True), name="docs")
+else:
+    @app.get("/")
+    def no_frontend() -> dict:
+        return {"error": "frontend not built", "fix": "cd frontend && npm install && npm run build"}
 
 
 def main() -> None:

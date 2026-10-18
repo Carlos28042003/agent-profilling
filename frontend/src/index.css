@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/* Color tokens: the validated categorical palette (blue, orange, aqua, yellow) with
+   separate light and dark steps. Charts and text read these, never raw hex. */
+:root {
+  color-scheme: light;
+  --surface-0: #f5f5f3;
+  --surface-1: #fcfcfb;
+  --surface-2: #f0efec;
+  --border: #e2e1dc;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #77766f;
+  --grid: #e7e6e1;
+  --accent: #2a78d6;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --good: #008300;
+  --bad: #c4302b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --surface-0: #121211;
+    --surface-1: #1a1a19;
+    --surface-2: #242423;
+    --border: #34342f;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #9a998f;
+    --grid: #2c2c29;
+    --accent: #3987e5;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --good: #4cb84c;
+    --bad: #e66767;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-0: #121211;
+  --surface-1: #1a1a19;
+  --surface-2: #242423;
+  --border: #34342f;
+  --text-primary: #f0efec;
+  --text-secondary: #c3c2b7;
+  --text-muted: #9a998f;
+  --grid: #2c2c29;
+  --accent: #3987e5;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --good: #4cb84c;
+  --bad: #e66767;
+}
+
+body {
+  background: var(--surface-0);
+  color: var(--text-primary);
+}
+
+@layer components {
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .muted {
+    color: var(--text-muted);
+  }
+  .secondary {
+    color: var(--text-secondary);
+  }
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .tab-active {
+    background: var(--surface-1);
+    border-color: var(--border);
+    color: var(--text-primary);
+  }
+  table td,
+  table th {
+    border-bottom: 1px solid var(--border);
+  }
+}

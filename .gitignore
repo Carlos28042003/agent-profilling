@@ -1,4 +1,4 @@
-# Python
+# Python (backend/)
 __pycache__/
 *.py[cod]
 .venv/
@@ -6,9 +6,13 @@ __pycache__/
 .ruff_cache/
 .ipynb_checkpoints/
 
-# Experiment output (large traces stay out of git; exported results go in results/)
+# Experiment output: raw traces stay local; exported results go in backend/results/
 traces/
 *.log
+
+# Node (frontend/); the production build goes to docs/ and IS committed (GitHub Pages)
+node_modules/
+frontend/dist/
 
 # Environment
 .env
