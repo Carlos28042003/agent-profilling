@@ -1,0 +1,35 @@
+[project]
+name = "agentic-profiling"
+version = "0.1.0"
+description = "Profiling of agentic LLM workloads: time breakdown, context growth and prefix reuse"
+readme = "README.md"
+authors = [
+    { name = "DTI", email = "dticasadagloria@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "datasets>=5.1.0",
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "openai>=3.35.1",
+    "pandas>=3.0.6",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+    "sympy>=1.14.0",
+    "tqdm>=4.70.1",
+    "transformers>=5.20.1",
+]
+
+[project.scripts]
+agentic-profiling = "agentic_profiling:main"
+
+[build-system]
+requires = ["uv_build>=0.13.1,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.17.1",
+]

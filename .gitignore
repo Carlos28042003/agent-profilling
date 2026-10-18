@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Saídas dos experimentos (traces grandes ficam fora do git; resultados finais vão em results/)
+traces/
+*.log
+
+# Ambiente
+.env
+.DS_Store

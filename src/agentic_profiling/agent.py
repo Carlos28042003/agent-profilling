@@ -1,0 +1,156 @@
+"""Loop ReAct escrito à mão, com um registo por passo para o profiling.
+
+O histórico só cresce por append (system, pergunta, depois pares
+assistente/observação), por isso o prompt do passo N é um prefixo do
+prompt do passo N+1. É precisamente isso que o prefix caching aproveita.
+"""
+
+import re
+import time
+from dataclasses import asdict, dataclass, field
+
+from .llm import LLM
+from .tools import TOOLS
+
+SYSTEM_PROMPT = """You are an agent that answers questions by reasoning step by step and using tools.
+
+Available tools:
+{tools}
+
+Use EXACTLY this format, one action per turn:
+
+Thought: <your reasoning about what to do next>
+Action: <one of: {names}>
+Action Input: <the input for the tool>
+
+After each action you will receive an "Observation:" with the result. Repeat as needed.
+When you know the answer, reply with:
+
+Thought: <short reasoning>
+Final Answer: <the answer, as short as possible>
+
+Never write "Action: None". If a search result is not relevant, rephrase the query
+(e.g. search the person's name, then read their page)."""
+
+ACTION_RE = re.compile(r"Action:\s*(\w+)\s*\n\s*Action Input:\s*(.*)", re.DOTALL)
+FINAL_RE = re.compile(r"Final Answer:\s*(.*)", re.DOTALL)
+
+
+@dataclass
+class Step:
+    index: int
+    t_start: float               # segundos desde o início da tarefa
+    llm_ttft_s: float
+    llm_generation_s: float
+    llm_total_s: float
+    tool: str | None
+    tool_input: str | None
+    tool_s: float
+    step_total_s: float
+    prompt_tokens: int | None
+    completion_tokens: int | None
+    cached_tokens: int | None
+    prompt_chars: int
+    shared_prefix_chars: int     # caracteres iguais ao prompt do passo anterior
+    output: str
+    observation: str | None
+
+
+@dataclass
+class Trace:
+    task_id: str
+    question: str
+    answer: str | None = None
+    finished: bool = False
+    stop_reason: str = ""
+    total_s: float = 0.0
+    steps: list[Step] = field(default_factory=list)
+    messages: list[dict] = field(default_factory=list)  # conversa final, para re-tokenizar
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
+
+def _render(messages: list[dict]) -> str:
+    return "".join(f"<{m['role']}>{m['content']}" for m in messages)
+
+
+def _common_prefix_len(a: str, b: str) -> int:
+    n = min(len(a), len(b))
+    i = 0
+    while i < n and a[i] == b[i]:
+        i += 1
+    return i
+
+
+def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8) -> Trace:
+    system = SYSTEM_PROMPT.format(
+        tools="\n".join(f"- {desc}" for _, desc in TOOLS.values()),
+        names=", ".join(TOOLS),
+    )
+    messages = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": f"Question: {question}"},
+    ]
+    trace = Trace(task_id=task_id, question=question)
+    prev_prompt = ""
+    t_task = time.perf_counter()
+
+    for i in range(max_steps):
+        t_step = time.perf_counter()
+        prompt = _render(messages)
+        res = llm.chat(messages, stop=["\nObservation:", "Observation:"])
+        output = res.text.strip()
+        messages.append({"role": "assistant", "content": output})
+
+        tool = tool_input = observation = None
+        tool_s = 0.0
+        final = FINAL_RE.search(output)
+        action = ACTION_RE.search(output)
+        if action and not (final and final.start() < action.start()):
+            tool, tool_input = action.group(1).lower(), action.group(2).strip()
+            t_tool = time.perf_counter()
+            if tool in TOOLS:
+                try:
+                    observation = TOOLS[tool][0](tool_input)
+                except Exception as e:  # noqa: BLE001 — falhas de rede/ferramenta viram observação
+                    observation = f"Error: {type(e).__name__}: {e}"
+            else:
+                observation = f"Error: unknown tool {tool!r}. Use one of: {', '.join(TOOLS)}."
+            tool_s = time.perf_counter() - t_tool
+            messages.append({"role": "user", "content": f"Observation: {observation}"})
+        elif final:
+            trace.answer = final.group(1).strip()
+            trace.finished = True
+            trace.stop_reason = "final_answer"
+        else:
+            observation = "Error: could not parse your reply. Use the Thought/Action/Action Input format or give a Final Answer."
+            messages.append({"role": "user", "content": f"Observation: {observation}"})
+
+        trace.steps.append(Step(
+            index=i,
+            t_start=t_step - t_task,
+            llm_ttft_s=res.ttft_s,
+            llm_generation_s=res.generation_s,
+            llm_total_s=res.total_s,
+            tool=tool,
+            tool_input=tool_input,
+            tool_s=tool_s,
+            step_total_s=time.perf_counter() - t_step,
+            prompt_tokens=res.prompt_tokens,
+            completion_tokens=res.completion_tokens,
+            cached_tokens=res.cached_tokens,
+            prompt_chars=len(prompt),
+            shared_prefix_chars=_common_prefix_len(prev_prompt, prompt),
+            output=output,
+            observation=observation,
+        ))
+        prev_prompt = prompt
+        if trace.finished:
+            break
+    else:
+        trace.stop_reason = "max_steps"
+
+    trace.total_s = time.perf_counter() - t_task
+    trace.messages = messages
+    return trace

@@ -1,0 +1,4 @@
+# Desenvolvimento
+pytest
+ruff
+ipykernel       # notebooks para explorar os traces

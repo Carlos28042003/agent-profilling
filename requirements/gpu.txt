@@ -1,0 +1,4 @@
+# Servidor de inferência (Semanas 4-5) — só Linux + GPU NVIDIA >= 24 GB (máquina alugada)
+# Instalar lá com: pip install -r requirements/gpu.txt
+vllm
+sglang[all]

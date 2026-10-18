@@ -1,0 +1,7 @@
+# Ollama local (Semana 1). Para vLLM: base_url http://<host>:8000/v1 e o nome do modelo HF.
+base_url: http://localhost:11434/v1
+model: llama3.2:3b
+temperature: 0.0
+seed: 0
+max_tokens: 512
+max_steps: 8

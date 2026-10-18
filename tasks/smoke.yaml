@@ -1,0 +1,16 @@
+# 5 tarefas de teste da Semana 1: cada ferramenta + multi-hop + combinação.
+- id: search_1
+  question: In which year was the Eiffel Tower completed?
+  expected: ["1889"]
+- id: calc_1
+  question: What is 1234 * 5678 + 91011?
+  expected: ["7097663"]
+- id: code_1
+  question: What is the sum of all prime numbers below 1000?
+  expected: ["76127"]
+- id: multihop_1
+  question: In which country was the director of the film "Inception" born?
+  expected: ["United Kingdom", "England", "UK", "London", "British"]
+- id: combo_1
+  question: How many years passed between the founding of Google and the founding of Microsoft?
+  expected: ["23"]
