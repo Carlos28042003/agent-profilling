@@ -30,6 +30,9 @@ When you know the answer, reply with:
 Thought: <short reasoning>
 Final Answer: <the answer, as short as possible>
 
+The Final Answer must be only the answer itself, not a sentence: a name, a number, a date,
+or "yes"/"no" for yes/no questions (e.g. "Final Answer: United Kingdom", "Final Answer: yes").
+
 Never write "Action: None". If a search result is not relevant, rephrase the query
 (e.g. search the person's name, then read their page).
 
