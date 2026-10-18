@@ -13,7 +13,7 @@ src/agentic_profiling/
   tools.py   search (Wikipedia), calculator (AST validada + sympy), python (subprocesso com timeout)
 configs/     servidor + modelo + parâmetros (seed, temperature, max_steps)
 tasks/       conjuntos de tarefas (smoke.yaml = 5 tarefas de teste)
-requirements/ base.txt (local), dev.txt, gpu.txt (vLLM/SGLang, só Linux + GPU)
+requirements/ base.txt (local), dev.txt, gpu.txt (vLLM) e sglang.txt — só Linux + GPU, venvs separados
 traces/      saída: um JSON por tarefa + run_meta.json (ignorado pelo git)
 ```
 
@@ -25,7 +25,7 @@ ollama pull llama3.2:3b
 uv run agentic-profiling configs/ollama.yaml tasks/smoke.yaml
 ```
 
-Para vLLM/SGLang (máquina Linux com GPU): `pip install -r requirements/gpu.txt`, subir o
+Para vLLM/SGLang (Linux + GPU): ver `requirements/gpu.txt` / `sglang.txt` e `ESTADO.md`; subir o
 servidor e apontar `base_url` do config para `http://<host>:8000/v1`.
 
 ## O que cada trace regista (por passo)

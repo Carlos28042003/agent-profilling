@@ -1,4 +1,4 @@
-# Servidor de inferência (Semanas 4-5) — só Linux + GPU NVIDIA >= 24 GB (máquina alugada)
-# Instalar lá com: pip install -r requirements/gpu.txt
+# Servidor vLLM (Semanas 4-5) — só Linux + GPU NVIDIA (>= 24 GB para modelos 7-8B)
+# Instalar NUM VENV SEPARADO do projeto (o vLLM fixa a sua própria versão de torch):
+#   uv venv ~/venvs/vllm && source ~/venvs/vllm/bin/activate && uv pip install -r requirements/gpu.txt
 vllm
-sglang[all]
