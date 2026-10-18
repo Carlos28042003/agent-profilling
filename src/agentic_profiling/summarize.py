@@ -16,7 +16,7 @@ TRUNCATION_TOKENS_PER_CHAR = 0.12
 def load_steps(run_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     tasks, steps = [], []
     for f in sorted(run_dir.glob("*.json")):
-        if f.name == "run_meta.json":
+        if f.name.startswith("run_meta"):
             continue
         t = json.loads(f.read_text(encoding="utf-8"))
         tasks.append({"run": run_dir.name, "task_id": t["task_id"], "correct": t["correct"],

@@ -23,7 +23,7 @@ def _fake_search(monkeypatch):
         calls.append(q)
         return f"result for {q}"
 
-    monkeypatch.setitem(agent.TOOLS, "search", (search, "search: fake"))
+    monkeypatch.setattr(agent, "make_tools", lambda: {"search": (search, "search: fake")})
     return calls
 
 

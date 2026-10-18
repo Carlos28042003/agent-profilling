@@ -27,6 +27,7 @@ agentic-profiling = "agentic_profiling:main"
 agentic-summary = "agentic_profiling.summarize:main"
 agentic-export = "agentic_profiling.export:main"
 agentic-ui = "agentic_profiling.server:main"
+agentic-tasks = "agentic_profiling.benchmarks:main"
 
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]

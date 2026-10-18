@@ -18,6 +18,7 @@ class LLMResult:
     prompt_tokens: int | None
     completion_tokens: int | None
     cached_tokens: int | None   # prompt tokens served from cache (if the server reports it)
+    server_timings: dict | None = None  # llama.cpp only: prompt_n, cache_n, prompt_ms, predicted_ms
 
     @property
     def generation_s(self) -> float:
@@ -26,18 +27,21 @@ class LLMResult:
 
 class LLM:
     def __init__(self, base_url: str, model: str, api_key: str = "unused",
-                 temperature: float = 0.0, max_tokens: int = 512, seed: int | None = 0):
+                 temperature: float = 0.0, max_tokens: int = 512, seed: int | None = 0,
+                 extra_body: dict | None = None):
         self.client = OpenAI(base_url=base_url, api_key=api_key)
         self.model = model
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.seed = seed
+        self.extra_body = extra_body  # server-specific options, e.g. {"cache_prompt": false} for llama.cpp
 
     def chat(self, messages: list[dict], stop: list[str] | None = None) -> LLMResult:
         t0 = time.perf_counter()
         ttft = None
         parts: list[str] = []
         usage = None
+        timings = None
         stream = self.client.chat.completions.create(
             model=self.model,
             messages=messages,
@@ -47,10 +51,14 @@ class LLM:
             stop=stop,
             stream=True,
             stream_options={"include_usage": True},
+            extra_body=self.extra_body,
         )
         for chunk in stream:
             if chunk.usage is not None:
                 usage = chunk.usage
+            # llama.cpp adds its own server-side timings (prefill/decode ms, cached tokens)
+            if chunk.model_extra and chunk.model_extra.get("timings"):
+                timings = chunk.model_extra["timings"]
             if chunk.choices and chunk.choices[0].delta.content:
                 if ttft is None:
                     ttft = time.perf_counter() - t0
@@ -58,11 +66,15 @@ class LLM:
         total = time.perf_counter() - t0
 
         details = getattr(usage, "prompt_tokens_details", None) if usage else None
+        cached = getattr(details, "cached_tokens", None) if details else None
+        if cached is None and timings and "cache_n" in timings:
+            cached = timings["cache_n"]
         return LLMResult(
             text="".join(parts),
             ttft_s=ttft if ttft is not None else total,
             total_s=total,
             prompt_tokens=usage.prompt_tokens if usage else None,
             completion_tokens=usage.completion_tokens if usage else None,
-            cached_tokens=getattr(details, "cached_tokens", None) if details else None,
+            cached_tokens=cached,
+            server_timings=timings,
         )
