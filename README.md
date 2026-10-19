@@ -178,7 +178,6 @@ src/agentic_profiling/
 configs/         server + model + sampling parameters (Ollama, llama.cpp)
 tasks/           smoke.yaml, hotpotqa_100.yaml, gsm8k_100.yaml
 scripts/         serve_llamacpp.ps1 (llama.cpp server)
-requirements/    readable dependency lists; gpu.txt / sglang.txt for Linux GPU servers
 results/         exported experiments (JSON), data.json for the frontend, figures — tracked
 traces/          raw traces — local only (git-ignored)
 tests/           pytest suite
@@ -251,7 +250,7 @@ uv run agentic-compare week4 traces/week4/cache-on traces/week4/cache-off
 ```
 
 **vLLM / SGLang (Linux, 24 GB GPU for 7-8B models).** Install each in its own virtual
-environment (see `requirements/gpu.txt` and `sglang.txt`):
+environment:
 
 ```bash
 vllm serve Qwen/Qwen2.5-7B-Instruct --port 8000                             # prefix caching on

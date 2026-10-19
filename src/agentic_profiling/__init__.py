@@ -1,13 +1,3 @@
-"""CLI: runs a task file and writes one JSON trace per task.
-
-    agentic-profiling configs/ollama.yaml tasks/smoke.yaml
-    agentic-profiling configs/ollama.yaml tasks/hotpotqa_100.yaml --out traces/week2/hotpotqa
-    agentic-profiling configs/llamacpp.yaml tasks/gsm8k_100.yaml --concurrency 4
-
-Tasks that already have a trace in the output directory are skipped, so an interrupted
-run resumes where it stopped.
-"""
-
 import argparse
 import json
 import platform
@@ -89,7 +79,6 @@ def main() -> None:
                          max_steps=cfg.get("max_steps", 8), history_window=cfg.get("history_window"),
                          allowed_tools=task.get("tools"))
         if any(s.observation and NETWORK_ERROR_RE.match(s.observation) for s in trace.steps):
-            # The environment failed, not the agent: do not save, so a resumed run retries the task.
             with lock:
                 done["n"] += 1
                 done["infra"] += 1

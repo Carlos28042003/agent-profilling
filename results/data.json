@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-18",
+  "updated": "2026-10-19",
   "experiments": [
     {
       "id": "week1-a-ctx4k",
@@ -1347,6 +1347,1222 @@
           "prefill (TTFT)": 59.2,
           "decode": 26.3,
           "tools": 14.5,
+          "overhead": 0.0
+        }
+      }
+    },
+    {
+      "id": "week2-3",
+      "title": "Weeks 2-3 · HotpotQA + GSM8K",
+      "description": "100 HotpotQA and 100 GSM8K tasks, llama3.2:3b on Ollama (GTX 1650): time split, context growth, prefix reuse and latency.",
+      "exported": "2026-10-19",
+      "runs": [
+        {
+          "run": "gsm8k",
+          "model": "llama3.2:3b-ctx8k",
+          "accuracy": 0.48,
+          "finished": 0.91,
+          "steps_mean": 4.29,
+          "task_s_p50": 15.56,
+          "task_s_max": 50.4,
+          "llm_%": 99.41,
+          "tool_%": 0.59,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 2.58,
+          "prompt_tok_max": 1518,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 92.53,
+          "cached_tok_%": 97.56
+        },
+        {
+          "run": "hotpotqa",
+          "model": "llama3.2:3b-ctx8k",
+          "accuracy": 0.13,
+          "finished": 0.6,
+          "steps_mean": 7.22,
+          "task_s_p50": 40.7,
+          "task_s_max": 79.33,
+          "llm_%": 85.68,
+          "tool_%": 14.32,
+          "overhead_%": 0.0,
+          "ttft_mean_s": 3.15,
+          "prompt_tok_max": 2435,
+          "truncated_steps": 0,
+          "prefix_reuse_%": 87.38,
+          "cached_tok_%": 90.56
+        }
+      ],
+      "per_task": {
+        "gsm8k_0002": {
+          "gsm8k": 0
+        },
+        "gsm8k_0028": {
+          "gsm8k": 1
+        },
+        "gsm8k_0067": {
+          "gsm8k": 1
+        },
+        "gsm8k_0079": {
+          "gsm8k": 1
+        },
+        "gsm8k_0082": {
+          "gsm8k": 1
+        },
+        "gsm8k_0127": {
+          "gsm8k": 1
+        },
+        "gsm8k_0128": {
+          "gsm8k": 1
+        },
+        "gsm8k_0141": {
+          "gsm8k": 0
+        },
+        "gsm8k_0151": {
+          "gsm8k": 0
+        },
+        "gsm8k_0164": {
+          "gsm8k": 1
+        },
+        "gsm8k_0183": {
+          "gsm8k": 0
+        },
+        "gsm8k_0186": {
+          "gsm8k": 0
+        },
+        "gsm8k_0187": {
+          "gsm8k": 0
+        },
+        "gsm8k_0191": {
+          "gsm8k": 0
+        },
+        "gsm8k_0194": {
+          "gsm8k": 1
+        },
+        "gsm8k_0202": {
+          "gsm8k": 1
+        },
+        "gsm8k_0206": {
+          "gsm8k": 0
+        },
+        "gsm8k_0223": {
+          "gsm8k": 1
+        },
+        "gsm8k_0255": {
+          "gsm8k": 0
+        },
+        "gsm8k_0266": {
+          "gsm8k": 0
+        },
+        "gsm8k_0285": {
+          "gsm8k": 0
+        },
+        "gsm8k_0286": {
+          "gsm8k": 1
+        },
+        "gsm8k_0291": {
+          "gsm8k": 0
+        },
+        "gsm8k_0300": {
+          "gsm8k": 0
+        },
+        "gsm8k_0306": {
+          "gsm8k": 0
+        },
+        "gsm8k_0376": {
+          "gsm8k": 1
+        },
+        "gsm8k_0382": {
+          "gsm8k": 1
+        },
+        "gsm8k_0387": {
+          "gsm8k": 1
+        },
+        "gsm8k_0391": {
+          "gsm8k": 0
+        },
+        "gsm8k_0416": {
+          "gsm8k": 0
+        },
+        "gsm8k_0418": {
+          "gsm8k": 0
+        },
+        "gsm8k_0447": {
+          "gsm8k": 1
+        },
+        "gsm8k_0454": {
+          "gsm8k": 0
+        },
+        "gsm8k_0488": {
+          "gsm8k": 1
+        },
+        "gsm8k_0495": {
+          "gsm8k": 0
+        },
+        "gsm8k_0499": {
+          "gsm8k": 0
+        },
+        "gsm8k_0513": {
+          "gsm8k": 1
+        },
+        "gsm8k_0530": {
+          "gsm8k": 0
+        },
+        "gsm8k_0532": {
+          "gsm8k": 1
+        },
+        "gsm8k_0533": {
+          "gsm8k": 1
+        },
+        "gsm8k_0564": {
+          "gsm8k": 0
+        },
+        "gsm8k_0577": {
+          "gsm8k": 0
+        },
+        "gsm8k_0589": {
+          "gsm8k": 0
+        },
+        "gsm8k_0594": {
+          "gsm8k": 0
+        },
+        "gsm8k_0596": {
+          "gsm8k": 0
+        },
+        "gsm8k_0617": {
+          "gsm8k": 1
+        },
+        "gsm8k_0621": {
+          "gsm8k": 1
+        },
+        "gsm8k_0635": {
+          "gsm8k": 0
+        },
+        "gsm8k_0647": {
+          "gsm8k": 1
+        },
+        "gsm8k_0649": {
+          "gsm8k": 0
+        },
+        "gsm8k_0655": {
+          "gsm8k": 1
+        },
+        "gsm8k_0666": {
+          "gsm8k": 0
+        },
+        "gsm8k_0676": {
+          "gsm8k": 1
+        },
+        "gsm8k_0681": {
+          "gsm8k": 0
+        },
+        "gsm8k_0682": {
+          "gsm8k": 1
+        },
+        "gsm8k_0724": {
+          "gsm8k": 0
+        },
+        "gsm8k_0733": {
+          "gsm8k": 0
+        },
+        "gsm8k_0788": {
+          "gsm8k": 1
+        },
+        "gsm8k_0801": {
+          "gsm8k": 1
+        },
+        "gsm8k_0816": {
+          "gsm8k": 1
+        },
+        "gsm8k_0829": {
+          "gsm8k": 1
+        },
+        "gsm8k_0861": {
+          "gsm8k": 0
+        },
+        "gsm8k_0889": {
+          "gsm8k": 1
+        },
+        "gsm8k_0906": {
+          "gsm8k": 0
+        },
+        "gsm8k_0911": {
+          "gsm8k": 0
+        },
+        "gsm8k_0917": {
+          "gsm8k": 0
+        },
+        "gsm8k_0966": {
+          "gsm8k": 0
+        },
+        "gsm8k_0975": {
+          "gsm8k": 0
+        },
+        "gsm8k_0976": {
+          "gsm8k": 1
+        },
+        "gsm8k_0995": {
+          "gsm8k": 0
+        },
+        "gsm8k_1002": {
+          "gsm8k": 1
+        },
+        "gsm8k_1010": {
+          "gsm8k": 1
+        },
+        "gsm8k_1033": {
+          "gsm8k": 1
+        },
+        "gsm8k_1040": {
+          "gsm8k": 0
+        },
+        "gsm8k_1047": {
+          "gsm8k": 0
+        },
+        "gsm8k_1067": {
+          "gsm8k": 1
+        },
+        "gsm8k_1074": {
+          "gsm8k": 1
+        },
+        "gsm8k_1090": {
+          "gsm8k": 0
+        },
+        "gsm8k_1106": {
+          "gsm8k": 1
+        },
+        "gsm8k_1107": {
+          "gsm8k": 1
+        },
+        "gsm8k_1112": {
+          "gsm8k": 1
+        },
+        "gsm8k_1120": {
+          "gsm8k": 0
+        },
+        "gsm8k_1121": {
+          "gsm8k": 0
+        },
+        "gsm8k_1123": {
+          "gsm8k": 1
+        },
+        "gsm8k_1128": {
+          "gsm8k": 0
+        },
+        "gsm8k_1131": {
+          "gsm8k": 0
+        },
+        "gsm8k_1146": {
+          "gsm8k": 0
+        },
+        "gsm8k_1162": {
+          "gsm8k": 0
+        },
+        "gsm8k_1178": {
+          "gsm8k": 1
+        },
+        "gsm8k_1194": {
+          "gsm8k": 1
+        },
+        "gsm8k_1203": {
+          "gsm8k": 0
+        },
+        "gsm8k_1221": {
+          "gsm8k": 1
+        },
+        "gsm8k_1232": {
+          "gsm8k": 1
+        },
+        "gsm8k_1235": {
+          "gsm8k": 1
+        },
+        "gsm8k_1251": {
+          "gsm8k": 0
+        },
+        "gsm8k_1253": {
+          "gsm8k": 0
+        },
+        "gsm8k_1254": {
+          "gsm8k": 1
+        },
+        "gsm8k_1266": {
+          "gsm8k": 1
+        },
+        "gsm8k_1280": {
+          "gsm8k": 1
+        },
+        "gsm8k_1311": {
+          "gsm8k": 0
+        },
+        "hotpot_0009": {
+          "hotpotqa": 0
+        },
+        "hotpot_0115": {
+          "hotpotqa": 0
+        },
+        "hotpot_0331": {
+          "hotpotqa": 0
+        },
+        "hotpot_0510": {
+          "hotpotqa": 0
+        },
+        "hotpot_0515": {
+          "hotpotqa": 0
+        },
+        "hotpot_0604": {
+          "hotpotqa": 0
+        },
+        "hotpot_0659": {
+          "hotpotqa": 0
+        },
+        "hotpot_0747": {
+          "hotpotqa": 0
+        },
+        "hotpot_0764": {
+          "hotpotqa": 0
+        },
+        "hotpot_0776": {
+          "hotpotqa": 0
+        },
+        "hotpot_0809": {
+          "hotpotqa": 0
+        },
+        "hotpot_0824": {
+          "hotpotqa": 0
+        },
+        "hotpot_0893": {
+          "hotpotqa": 1
+        },
+        "hotpot_1140": {
+          "hotpotqa": 0
+        },
+        "hotpot_1144": {
+          "hotpotqa": 0
+        },
+        "hotpot_1167": {
+          "hotpotqa": 0
+        },
+        "hotpot_1203": {
+          "hotpotqa": 0
+        },
+        "hotpot_1565": {
+          "hotpotqa": 0
+        },
+        "hotpot_1675": {
+          "hotpotqa": 1
+        },
+        "hotpot_1789": {
+          "hotpotqa": 0
+        },
+        "hotpot_1816": {
+          "hotpotqa": 0
+        },
+        "hotpot_1954": {
+          "hotpotqa": 1
+        },
+        "hotpot_1998": {
+          "hotpotqa": 0
+        },
+        "hotpot_2052": {
+          "hotpotqa": 0
+        },
+        "hotpot_2121": {
+          "hotpotqa": 1
+        },
+        "hotpot_2133": {
+          "hotpotqa": 0
+        },
+        "hotpot_2308": {
+          "hotpotqa": 1
+        },
+        "hotpot_2384": {
+          "hotpotqa": 0
+        },
+        "hotpot_2469": {
+          "hotpotqa": 0
+        },
+        "hotpot_2484": {
+          "hotpotqa": 1
+        },
+        "hotpot_2540": {
+          "hotpotqa": 1
+        },
+        "hotpot_2590": {
+          "hotpotqa": 0
+        },
+        "hotpot_2621": {
+          "hotpotqa": 0
+        },
+        "hotpot_2664": {
+          "hotpotqa": 0
+        },
+        "hotpot_2704": {
+          "hotpotqa": 0
+        },
+        "hotpot_2729": {
+          "hotpotqa": 0
+        },
+        "hotpot_2898": {
+          "hotpotqa": 0
+        },
+        "hotpot_2933": {
+          "hotpotqa": 0
+        },
+        "hotpot_3155": {
+          "hotpotqa": 0
+        },
+        "hotpot_3267": {
+          "hotpotqa": 0
+        },
+        "hotpot_3317": {
+          "hotpotqa": 1
+        },
+        "hotpot_3445": {
+          "hotpotqa": 0
+        },
+        "hotpot_3556": {
+          "hotpotqa": 0
+        },
+        "hotpot_3626": {
+          "hotpotqa": 0
+        },
+        "hotpot_3669": {
+          "hotpotqa": 0
+        },
+        "hotpot_3867": {
+          "hotpotqa": 0
+        },
+        "hotpot_3904": {
+          "hotpotqa": 0
+        },
+        "hotpot_3907": {
+          "hotpotqa": 0
+        },
+        "hotpot_3980": {
+          "hotpotqa": 0
+        },
+        "hotpot_4008": {
+          "hotpotqa": 0
+        },
+        "hotpot_4043": {
+          "hotpotqa": 0
+        },
+        "hotpot_4134": {
+          "hotpotqa": 0
+        },
+        "hotpot_4161": {
+          "hotpotqa": 0
+        },
+        "hotpot_4188": {
+          "hotpotqa": 0
+        },
+        "hotpot_4270": {
+          "hotpotqa": 0
+        },
+        "hotpot_4362": {
+          "hotpotqa": 0
+        },
+        "hotpot_4448": {
+          "hotpotqa": 0
+        },
+        "hotpot_4494": {
+          "hotpotqa": 1
+        },
+        "hotpot_4515": {
+          "hotpotqa": 0
+        },
+        "hotpot_4526": {
+          "hotpotqa": 0
+        },
+        "hotpot_4585": {
+          "hotpotqa": 1
+        },
+        "hotpot_4649": {
+          "hotpotqa": 0
+        },
+        "hotpot_4779": {
+          "hotpotqa": 0
+        },
+        "hotpot_4930": {
+          "hotpotqa": 1
+        },
+        "hotpot_5004": {
+          "hotpotqa": 1
+        },
+        "hotpot_5012": {
+          "hotpotqa": 0
+        },
+        "hotpot_5065": {
+          "hotpotqa": 0
+        },
+        "hotpot_5122": {
+          "hotpotqa": 0
+        },
+        "hotpot_5246": {
+          "hotpotqa": 0
+        },
+        "hotpot_5473": {
+          "hotpotqa": 0
+        },
+        "hotpot_5603": {
+          "hotpotqa": 0
+        },
+        "hotpot_5764": {
+          "hotpotqa": 0
+        },
+        "hotpot_5776": {
+          "hotpotqa": 0
+        },
+        "hotpot_5818": {
+          "hotpotqa": 0
+        },
+        "hotpot_5895": {
+          "hotpotqa": 0
+        },
+        "hotpot_5978": {
+          "hotpotqa": 0
+        },
+        "hotpot_5982": {
+          "hotpotqa": 0
+        },
+        "hotpot_6191": {
+          "hotpotqa": 0
+        },
+        "hotpot_6209": {
+          "hotpotqa": 0
+        },
+        "hotpot_6420": {
+          "hotpotqa": 0
+        },
+        "hotpot_6431": {
+          "hotpotqa": 0
+        },
+        "hotpot_6548": {
+          "hotpotqa": 0
+        },
+        "hotpot_6579": {
+          "hotpotqa": 0
+        },
+        "hotpot_6581": {
+          "hotpotqa": 1
+        },
+        "hotpot_6594": {
+          "hotpotqa": 0
+        },
+        "hotpot_6637": {
+          "hotpotqa": 0
+        },
+        "hotpot_6757": {
+          "hotpotqa": 0
+        },
+        "hotpot_6783": {
+          "hotpotqa": 0
+        },
+        "hotpot_6798": {
+          "hotpotqa": 0
+        },
+        "hotpot_6882": {
+          "hotpotqa": 0
+        },
+        "hotpot_6917": {
+          "hotpotqa": 0
+        },
+        "hotpot_6967": {
+          "hotpotqa": 0
+        },
+        "hotpot_7088": {
+          "hotpotqa": 0
+        },
+        "hotpot_7107": {
+          "hotpotqa": 0
+        },
+        "hotpot_7130": {
+          "hotpotqa": 0
+        },
+        "hotpot_7168": {
+          "hotpotqa": 0
+        },
+        "hotpot_7292": {
+          "hotpotqa": 0
+        },
+        "hotpot_7304": {
+          "hotpotqa": 0
+        },
+        "hotpot_7363": {
+          "hotpotqa": 0
+        },
+        "hotpot_7390": {
+          "hotpotqa": 0
+        }
+      },
+      "example": {
+        "run": "hotpotqa",
+        "task_id": "hotpot_3317",
+        "question": "What giant silverware company was started as a religious Utopian group and was for many years run by Pierrepont Noyes?",
+        "answer": "Oneida Limited",
+        "correct": true,
+        "model": "llama3.2:3b-ctx8k",
+        "steps": [
+          {
+            "index": 0,
+            "tool": "search",
+            "llm_ttft_s": 2.6324449,
+            "llm_generation_s": 1.5762989,
+            "tool_s": 1.9845012,
+            "prompt_tokens": 667,
+            "completion_tokens": 36,
+            "cached_tokens": 635,
+            "truncated": false
+          },
+          {
+            "index": 1,
+            "tool": "search",
+            "llm_ttft_s": 3.9225894,
+            "llm_generation_s": 1.5729643,
+            "tool_s": 1.3976767,
+            "prompt_tokens": 946,
+            "completion_tokens": 35,
+            "cached_tokens": 699,
+            "truncated": false
+          },
+          {
+            "index": 2,
+            "tool": "lookup",
+            "llm_ttft_s": 3.2002311,
+            "llm_generation_s": 1.5032915,
+            "tool_s": 3.09e-05,
+            "prompt_tokens": 1096,
+            "completion_tokens": 33,
+            "cached_tokens": 980,
+            "truncated": false
+          },
+          {
+            "index": 3,
+            "tool": "search",
+            "llm_ttft_s": 2.7222116,
+            "llm_generation_s": 1.5698577,
+            "tool_s": 1.2988974,
+            "prompt_tokens": 1177,
+            "completion_tokens": 33,
+            "cached_tokens": 1128,
+            "truncated": false
+          },
+          {
+            "index": 4,
+            "tool": "lookup",
+            "llm_ttft_s": 3.1065167,
+            "llm_generation_s": 1.6360901,
+            "tool_s": 5.04e-05,
+            "prompt_tokens": 1307,
+            "completion_tokens": 34,
+            "cached_tokens": 1209,
+            "truncated": false
+          },
+          {
+            "index": 5,
+            "tool": "lookup",
+            "llm_ttft_s": 2.6808243,
+            "llm_generation_s": 1.8950677,
+            "tool_s": 4.33e-05,
+            "prompt_tokens": 1366,
+            "completion_tokens": 39,
+            "cached_tokens": 1340,
+            "truncated": false
+          },
+          {
+            "index": 6,
+            "tool": "search",
+            "llm_ttft_s": 2.7149587,
+            "llm_generation_s": 1.6072418,
+            "tool_s": 1.4e-06,
+            "prompt_tokens": 1432,
+            "completion_tokens": 33,
+            "cached_tokens": 1404,
+            "truncated": false
+          },
+          {
+            "index": 7,
+            "tool": null,
+            "llm_ttft_s": 2.77345,
+            "llm_generation_s": 1.597625,
+            "tool_s": 0.0,
+            "prompt_tokens": 1516,
+            "completion_tokens": 32,
+            "cached_tokens": 1464,
+            "truncated": false
+          }
+        ]
+      },
+      "stats": {
+        "gsm8k": {
+          "tasks": 100,
+          "accuracy": 0.48,
+          "f1": null,
+          "finished": 0.91,
+          "steps_mean": 4.29,
+          "steps_median": 4.0,
+          "task_s_p50": 15.6,
+          "task_s_p95": 41.6,
+          "time_split_%": {
+            "prefill (TTFT)": 57.6,
+            "decode": 41.8,
+            "tools": 0.6,
+            "overhead": 0.0
+          },
+          "llm_calls": 429,
+          "prompt_tokens_mean": 789.0,
+          "prompt_tokens_max": 1518,
+          "context_growth_tokens_per_step": 79.0,
+          "repeated_prefix_%_all_calls": 78.9,
+          "repeated_prefix_%_steps_ge1": 97.7,
+          "cached_%_all_calls": 96.0,
+          "truncated_steps": 0
+        },
+        "hotpotqa": {
+          "tasks": 100,
+          "accuracy": 0.13,
+          "f1": 0.188,
+          "finished": 0.6,
+          "steps_mean": 7.22,
+          "steps_median": 8.0,
+          "task_s_p50": 40.7,
+          "task_s_p95": 60.1,
+          "time_split_%": {
+            "prefill (TTFT)": 54.6,
+            "decode": 31.1,
+            "tools": 14.3,
+            "overhead": 0.0
+          },
+          "llm_calls": 722,
+          "prompt_tokens_mean": 1225.0,
+          "prompt_tokens_max": 2435,
+          "context_growth_tokens_per_step": 156.0,
+          "repeated_prefix_%_all_calls": 83.9,
+          "repeated_prefix_%_steps_ge1": 90.7,
+          "cached_%_all_calls": 90.9,
+          "truncated_steps": 0
+        }
+      },
+      "growth": {
+        "gsm8k": [
+          {
+            "step": 0,
+            "p25": 638,
+            "p50": 649,
+            "p75": 658,
+            "n": 100
+          },
+          {
+            "step": 1,
+            "p25": 692,
+            "p50": 708,
+            "p75": 724,
+            "n": 100
+          },
+          {
+            "step": 2,
+            "p25": 743,
+            "p50": 766,
+            "p75": 794,
+            "n": 97
+          },
+          {
+            "step": 3,
+            "p25": 809,
+            "p50": 839,
+            "p75": 891,
+            "n": 56
+          },
+          {
+            "step": 4,
+            "p25": 878,
+            "p50": 910,
+            "p75": 968,
+            "n": 30
+          },
+          {
+            "step": 5,
+            "p25": 940,
+            "p50": 994,
+            "p75": 1069,
+            "n": 20
+          },
+          {
+            "step": 6,
+            "p25": 1018,
+            "p50": 1085,
+            "p75": 1180,
+            "n": 15
+          },
+          {
+            "step": 7,
+            "p25": 1112,
+            "p50": 1225,
+            "p75": 1286,
+            "n": 11
+          }
+        ],
+        "hotpotqa": [
+          {
+            "step": 0,
+            "p25": 655,
+            "p50": 658,
+            "p75": 662,
+            "n": 100
+          },
+          {
+            "step": 1,
+            "p25": 823,
+            "p50": 904,
+            "p75": 959,
+            "n": 100
+          },
+          {
+            "step": 2,
+            "p25": 972,
+            "p50": 1051,
+            "p75": 1141,
+            "n": 100
+          },
+          {
+            "step": 3,
+            "p25": 1097,
+            "p50": 1204,
+            "p75": 1332,
+            "n": 100
+          },
+          {
+            "step": 4,
+            "p25": 1210,
+            "p50": 1349,
+            "p75": 1490,
+            "n": 92
+          },
+          {
+            "step": 5,
+            "p25": 1348,
+            "p50": 1496,
+            "p75": 1658,
+            "n": 83
+          },
+          {
+            "step": 6,
+            "p25": 1420,
+            "p50": 1667,
+            "p75": 1863,
+            "n": 77
+          },
+          {
+            "step": 7,
+            "p25": 1517,
+            "p50": 1772,
+            "p75": 1974,
+            "n": 70
+          }
+        ]
+      },
+      "reuse_by_step": {
+        "gsm8k": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 89.3
+          },
+          {
+            "step": 1,
+            "reuse_pct": 97.9,
+            "cached_pct": 97.6
+          },
+          {
+            "step": 2,
+            "reuse_pct": 97.7,
+            "cached_pct": 97.6
+          },
+          {
+            "step": 3,
+            "reuse_pct": 97.8,
+            "cached_pct": 97.6
+          },
+          {
+            "step": 4,
+            "reuse_pct": 97.3,
+            "cached_pct": 97.2
+          },
+          {
+            "step": 5,
+            "reuse_pct": 97.7,
+            "cached_pct": 97.6
+          },
+          {
+            "step": 6,
+            "reuse_pct": 97.9,
+            "cached_pct": 97.8
+          },
+          {
+            "step": 7,
+            "reuse_pct": 97.4,
+            "cached_pct": 97.3
+          }
+        ],
+        "hotpotqa": [
+          {
+            "step": 0,
+            "reuse_pct": 0.0,
+            "cached_pct": 94.8
+          },
+          {
+            "step": 1,
+            "reuse_pct": 78.1,
+            "cached_pct": 77.8
+          },
+          {
+            "step": 2,
+            "reuse_pct": 86.9,
+            "cached_pct": 86.8
+          },
+          {
+            "step": 3,
+            "reuse_pct": 90.3,
+            "cached_pct": 90.2
+          },
+          {
+            "step": 4,
+            "reuse_pct": 92.9,
+            "cached_pct": 92.8
+          },
+          {
+            "step": 5,
+            "reuse_pct": 93.1,
+            "cached_pct": 93.0
+          },
+          {
+            "step": 6,
+            "reuse_pct": 94.3,
+            "cached_pct": 94.2
+          },
+          {
+            "step": 7,
+            "reuse_pct": 94.8,
+            "cached_pct": 94.7
+          }
+        ]
+      },
+      "latency": {
+        "gsm8k": [
+          7.25,
+          8.97,
+          9.38,
+          10.18,
+          10.53,
+          10.7,
+          10.75,
+          10.85,
+          10.89,
+          10.93,
+          10.99,
+          11.01,
+          11.02,
+          11.08,
+          11.08,
+          11.2,
+          11.28,
+          11.47,
+          11.53,
+          11.66,
+          11.68,
+          11.7,
+          11.72,
+          11.74,
+          11.75,
+          11.8,
+          11.83,
+          11.83,
+          11.89,
+          11.92,
+          11.95,
+          11.97,
+          12.05,
+          12.06,
+          12.26,
+          12.4,
+          12.44,
+          12.45,
+          12.52,
+          12.73,
+          12.9,
+          14.25,
+          14.25,
+          14.38,
+          14.92,
+          14.95,
+          15.17,
+          15.36,
+          15.54,
+          15.54,
+          15.58,
+          16.05,
+          16.12,
+          16.24,
+          16.74,
+          16.92,
+          17.05,
+          17.19,
+          17.28,
+          17.78,
+          17.82,
+          17.83,
+          18.1,
+          18.78,
+          18.86,
+          18.96,
+          19.42,
+          19.79,
+          19.97,
+          20.04,
+          20.36,
+          20.74,
+          21.84,
+          22.05,
+          22.39,
+          22.56,
+          23.11,
+          23.71,
+          24.37,
+          24.41,
+          27.96,
+          28.51,
+          29.22,
+          29.91,
+          30.17,
+          32.34,
+          32.36,
+          33.13,
+          33.97,
+          33.99,
+          34.24,
+          38.46,
+          39.23,
+          40.81,
+          41.53,
+          43.61,
+          45.14,
+          46.24,
+          49.72,
+          50.4
+        ],
+        "hotpotqa": [
+          18.73,
+          19.54,
+          19.6,
+          20.12,
+          20.43,
+          21.08,
+          21.38,
+          25.06,
+          25.34,
+          25.78,
+          26.33,
+          26.36,
+          26.56,
+          27.12,
+          27.79,
+          30.36,
+          31.04,
+          32.11,
+          32.82,
+          33.23,
+          33.7,
+          33.82,
+          34.42,
+          34.52,
+          34.97,
+          35.13,
+          35.68,
+          35.71,
+          35.82,
+          36.31,
+          36.57,
+          36.82,
+          36.87,
+          36.91,
+          37.44,
+          37.61,
+          37.78,
+          37.84,
+          38.03,
+          38.19,
+          39.06,
+          39.08,
+          39.1,
+          39.49,
+          39.63,
+          39.92,
+          40.15,
+          40.21,
+          40.36,
+          40.59,
+          40.81,
+          41.4,
+          41.49,
+          42.18,
+          42.43,
+          42.98,
+          43.36,
+          43.46,
+          43.58,
+          44.26,
+          44.43,
+          44.57,
+          45.14,
+          45.43,
+          46.34,
+          46.78,
+          47.01,
+          47.12,
+          47.13,
+          47.72,
+          48.01,
+          48.43,
+          48.49,
+          48.65,
+          49.51,
+          50.17,
+          50.6,
+          51.15,
+          51.19,
+          51.28,
+          51.81,
+          52.2,
+          52.28,
+          52.38,
+          53.65,
+          54.24,
+          54.86,
+          55.23,
+          55.79,
+          56.54,
+          56.65,
+          56.76,
+          58.82,
+          59.57,
+          60.04,
+          60.66,
+          60.75,
+          61.39,
+          63.61,
+          79.33
+        ]
+      },
+      "time_split": {
+        "gsm8k": {
+          "prefill (TTFT)": 57.6,
+          "decode": 41.8,
+          "tools": 0.6,
+          "overhead": 0.0
+        },
+        "hotpotqa": {
+          "prefill (TTFT)": 54.6,
+          "decode": 31.1,
+          "tools": 14.3,
           "overhead": 0.0
         }
       }

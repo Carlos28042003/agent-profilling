@@ -1,11 +1,3 @@
-"""Answer grading.
-
-- `hotpotqa`: normalized exact match and token F1 (the official HotpotQA/SQuAD metrics).
-  A task counts as correct on exact match.
-- `numeric`: the last number in the answer equals the expected number (GSM8K).
-- `contains`: any expected string appears in the answer (smoke tests).
-"""
-
 import re
 import string
 from collections import Counter
@@ -14,7 +6,6 @@ NUMBER_RE = re.compile(r"-?\d[\d,]*\.?\d*")
 
 
 def normalize_answer(s: str) -> str:
-    """Lowercase, drop punctuation and articles, collapse whitespace (SQuAD normalization)."""
     s = s.lower()
     s = "".join(ch for ch in s if ch not in set(string.punctuation))
     s = re.sub(r"\b(a|an|the)\b", " ", s)
@@ -23,7 +14,6 @@ def normalize_answer(s: str) -> str:
 
 def f1_score(prediction: str, truth: str) -> float:
     pred, gold = normalize_answer(prediction), normalize_answer(truth)
-    # yes/no/noanswer must match exactly, as in the official HotpotQA script
     if pred in ("yes", "no", "noanswer") or gold in ("yes", "no", "noanswer"):
         return float(pred == gold)
     p, g = pred.split(), gold.split()
@@ -46,7 +36,6 @@ def last_number(s: str) -> float | None:
 
 
 def grade(answer: str | None, expected: list[str], metric: str = "contains") -> dict:
-    """Return {"correct": bool, "em": float | None, "f1": float | None}."""
     if answer is None:
         return {"correct": False, "em": 0.0 if metric == "hotpotqa" else None,
                 "f1": 0.0 if metric == "hotpotqa" else None}

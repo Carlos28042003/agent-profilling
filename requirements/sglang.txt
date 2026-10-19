@@ -1,4 +1,0 @@
-# SGLang / RadixAttention server (Week 4, optional) — Linux + NVIDIA GPU only
-# Install in a venv SEPARATE from vLLM (conflicting torch versions):
-#   uv venv ~/venvs/sglang && source ~/venvs/sglang/bin/activate && uv pip install -r requirements/sglang.txt
-sglang[all]

@@ -1,12 +1,3 @@
-"""Compare runs of the same tasks under different serving setups (Weeks 4-5).
-
-    agentic-compare week4 traces/week4/cache-on traces/week4/cache-off
-    agentic-compare week5 traces/week5/c1 traces/week5/c2 traces/week5/c4 traces/week5/c8
-
-Writes results/figures/<name>/compare.json, compare.md, ttft_vs_prompt.png and
-throughput_latency.png. Run directories keep the order given (it is the x-axis).
-"""
-
 import argparse
 import json
 import sys
@@ -21,7 +12,6 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def _wall(run_dir: Path) -> tuple[float | None, int | None]:
-    """Total wall time and concurrency from the run_summary files of a directory."""
     summaries = [json.loads(f.read_text(encoding="utf-8")) for f in run_dir.glob("run_summary_*.json")]
     if not summaries:
         return None, None

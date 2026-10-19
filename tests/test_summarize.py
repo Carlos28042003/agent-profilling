@@ -8,7 +8,6 @@ def _step(i, chars, tokens):
 
 
 def test_detects_context_truncation(tmp_path):
-    # Values from code_1 (llama3.2:3b, 4096 context): Ollama truncates from step 5 on.
     steps = [_step(3, 5864, 2591), _step(4, 7691, 3612), _step(5, 9517, 3768), _step(6, 11341, 3758)]
     trace = {"task_id": "code_1", "correct": False, "finished": False, "total_s": 1.0, "steps": steps}
     (tmp_path / "code_1.json").write_text(json.dumps(trace))
@@ -19,8 +18,6 @@ def test_detects_context_truncation(tmp_path):
 
 
 def test_density_change_is_not_truncation(tmp_path):
-    # Real values from combo_1: the prompt goes from instructions to Wikipedia text
-    # (tokens/char drops from 0.26 to 0.23), but nothing was truncated.
     steps = [_step(0, 968, 248), _step(1, 2591, 584)]
     trace = {"task_id": "combo_1", "correct": True, "finished": True, "total_s": 1.0, "steps": steps}
     (tmp_path / "combo_1.json").write_text(json.dumps(trace))

@@ -1,14 +1,3 @@
-"""Build task files from public benchmarks (fixed seed, so every run uses the same tasks).
-
-    agentic-tasks hotpotqa --n 100      # -> tasks/hotpotqa_100.yaml
-    agentic-tasks gsm8k --n 100         # -> tasks/gsm8k_100.yaml
-
-HotpotQA: distractor validation split, used in the "fullwiki" style: the agent gets only
-the question and must find the evidence with its Wikipedia tools.
-GSM8K: test split; the expected answer is the number after "####".
-Each benchmark gets its own tool set, as in the ReAct paper.
-"""
-
 import argparse
 import random
 from pathlib import Path

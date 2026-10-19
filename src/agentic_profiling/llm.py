@@ -1,9 +1,3 @@
-"""Instrumented LLM client: measures TTFT, generation time and tokens of every call.
-
-It uses the OpenAI-compatible API, so it works with Ollama, vLLM and SGLang
-by changing only `base_url`.
-"""
-
 import time
 from dataclasses import dataclass
 
@@ -13,12 +7,12 @@ from openai import OpenAI
 @dataclass
 class LLMResult:
     text: str
-    ttft_s: float          # time to first token
-    total_s: float         # total call time
+    ttft_s: float
+    total_s: float
     prompt_tokens: int | None
     completion_tokens: int | None
-    cached_tokens: int | None   # prompt tokens served from cache (if the server reports it)
-    server_timings: dict | None = None  # llama.cpp only: prompt_n, cache_n, prompt_ms, predicted_ms
+    cached_tokens: int | None
+    server_timings: dict | None = None
 
     @property
     def generation_s(self) -> float:
@@ -34,7 +28,7 @@ class LLM:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.seed = seed
-        self.extra_body = extra_body  # server-specific options, e.g. {"cache_prompt": false} for llama.cpp
+        self.extra_body = extra_body
 
     def chat(self, messages: list[dict], stop: list[str] | None = None) -> LLMResult:
         t0 = time.perf_counter()
@@ -56,7 +50,6 @@ class LLM:
         for chunk in stream:
             if chunk.usage is not None:
                 usage = chunk.usage
-            # llama.cpp adds its own server-side timings (prefill/decode ms, cached tokens)
             if chunk.model_extra and chunk.model_extra.get("timings"):
                 timings = chunk.model_extra["timings"]
             if chunk.choices and chunk.choices[0].delta.content:

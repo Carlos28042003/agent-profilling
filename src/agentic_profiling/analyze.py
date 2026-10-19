@@ -1,16 +1,3 @@
-"""Week 3 characterization: figures and headline numbers for one or more workloads.
-
-    agentic-analyze week2 traces/week2/hotpotqa traces/week2/gsm8k
-
-Writes results/figures/<name>/*.png and results/figures/<name>/stats.json. Each trace
-directory is one workload (its directory name is the label).
-
-Token-level prefix reuse: the history is append-only, so the prompt of step n contains
-the whole prompt of step n-1 plus its output. The reusable part of step n is therefore
-min(prompt_tokens[n], prompt_tokens[n-1] + completion_tokens[n-1]): the tokens a server
-with prefix caching would not need to recompute.
-"""
-
 import argparse
 import json
 import sys
@@ -28,13 +15,12 @@ from .summarize import load_steps
 
 ROOT = Path(__file__).resolve().parents[2]
 
-# Validated categorical palette (light mode), in fixed order; text never wears these colors.
 SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100"]
 INK, INK_2, INK_3, GRID, SURFACE = "#0b0b0b", "#52514e", "#77766f", "#e7e6e1", "#ffffff"
 
 plt.rcParams.update({
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE, "savefig.facecolor": SURFACE,
-    "font.size": 9, "axes.titlesize": 10, "axes.titleweight": "semibold", "axes.titlelocation": "left",
+    "font.size": 9, "axes.titlesize": 10, "axes.titleweight": "bold", "axes.titlelocation": "left",
     "axes.edgecolor": GRID, "axes.labelcolor": INK_2, "xtick.color": INK_3, "ytick.color": INK_3,
     "axes.spines.top": False, "axes.spines.right": False, "axes.grid": True, "grid.color": GRID,
     "grid.linewidth": 0.8, "axes.axisbelow": True, "legend.frameon": False, "lines.linewidth": 2,
@@ -51,7 +37,6 @@ def load(run_dirs: list[Path]) -> tuple[pd.DataFrame, pd.DataFrame]:
     steps["reusable_tokens"] = np.minimum(steps["prompt_tokens"],
                                           prev["prompt_tokens"] + prev["completion_tokens"]).fillna(0)
     steps["overhead_s"] = (steps["step_total_s"] - steps["llm_total_s"] - steps["tool_s"]).clip(lower=0)
-    # EM/F1 live in the trace files, not in load_steps
     extra = []
     for r in run_dirs:
         for f in r.glob("*.json"):
@@ -129,7 +114,7 @@ def fig_context_growth(steps: pd.DataFrame, out_dir: Path) -> None:
     for i, (run, s) in enumerate(steps.groupby("run")):
         q = s.groupby("index")["prompt_tokens"].quantile([0.25, 0.5, 0.75]).unstack()
         n = s.groupby("index").size()
-        q = q[n >= 5]  # only steps reached by at least 5 tasks
+        q = q[n >= 5]
         ax.fill_between(q.index, q[0.25], q[0.75], color=SERIES[i], alpha=0.12, linewidth=0)
         ax.plot(q.index, q[0.5], color=SERIES[i], marker="o", markersize=4, label=run)
         ax.annotate(f"{q[0.5].iloc[-1]:,.0f}", (q.index[-1], q[0.5].iloc[-1]), xytext=(6, 0),
@@ -153,7 +138,7 @@ def fig_prefix_reuse(steps: pd.DataFrame, out_dir: Path) -> None:
         axes[0].plot(reuse.index, reuse.values, color=SERIES[i], marker="o", markersize=4, label=run)
         axes[1].plot(cached.index, cached.values, color=SERIES[i], marker="o", markersize=4, label=run)
     axes[0].set_title("Repeated prefix (could be cached)")
-    axes[1].set_title("Actually served from cache (Ollama)")
+    axes[1].set_title("Actually served from the server cache")
     for ax in axes:
         ax.set_xlabel("Step")
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))

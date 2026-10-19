@@ -17,8 +17,6 @@ dependencies = [
     "pyyaml>=6.0.3",
     "requests>=2.34.2",
     "sympy>=1.14.0",
-    "tqdm>=4.70.1",
-    "transformers>=5.20.1",
     "uvicorn>=0.54.0",
 ]
 
@@ -29,6 +27,7 @@ agentic-export = "agentic_profiling.export:main"
 agentic-ui = "agentic_profiling.server:main"
 agentic-tasks = "agentic_profiling.benchmarks:main"
 agentic-analyze = "agentic_profiling.analyze:main"
+agentic-compare = "agentic_profiling.compare:main"
 
 [build-system]
 requires = ["uv_build>=0.13.1,<0.14.0"]
@@ -36,7 +35,6 @@ build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
-    "ipykernel>=7.4.0",
     "pytest>=9.1.1",
     "ruff>=0.17.1",
 ]

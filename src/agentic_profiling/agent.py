@@ -1,10 +1,3 @@
-"""Hand-written ReAct loop that records one profiling entry per step.
-
-The history is append-only (system, question, then assistant/observation
-pairs), so the prompt of step N is a prefix of the prompt of step N+1.
-That is exactly what prefix caching exploits.
-"""
-
 import re
 import time
 from collections.abc import Callable
@@ -69,7 +62,7 @@ FINAL_RE = re.compile(r"Final Answer:\s*(.*)", re.DOTALL)
 @dataclass
 class Step:
     index: int
-    t_start: float               # seconds since the task started
+    t_start: float
     llm_ttft_s: float
     llm_generation_s: float
     llm_total_s: float
@@ -81,10 +74,10 @@ class Step:
     completion_tokens: int | None
     cached_tokens: int | None
     prompt_chars: int
-    shared_prefix_chars: int     # chars shared with the previous step's prompt
+    shared_prefix_chars: int
     output: str
     observation: str | None
-    server_timings: dict | None = None  # llama.cpp server-side timings, if reported
+    server_timings: dict | None = None
 
 
 @dataclass
@@ -96,7 +89,7 @@ class Trace:
     stop_reason: str = ""
     total_s: float = 0.0
     steps: list[Step] = field(default_factory=list)
-    messages: list[dict] = field(default_factory=list)  # final conversation, for offline re-tokenization
+    messages: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -117,13 +110,8 @@ def _common_prefix_len(a: str, b: str) -> int:
 def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8,
              on_step: Callable[[Step], None] | None = None, history_window: int | None = None,
              allowed_tools: list[str] | None = None) -> Trace:
-    """Run one task. `on_step` is called after each step (used by the web UI).
-
-    `history_window`: if set, the prompt keeps only the system message, the question and the
-    last N assistant/observation pairs (context truncation, the Week 5 optimization).
-    """
     tools = make_tools()
-    if allowed_tools:  # benchmark-specific tool set, as in the ReAct paper
+    if allowed_tools:
         tools = {name: tools[name] for name in allowed_tools}
     system = SYSTEM_PROMPT.format(
         tools="\n".join(f"- {desc}" for _, desc in tools.values()),
@@ -142,7 +130,6 @@ def run_task(llm: LLM, task_id: str, question: str, max_steps: int = 8,
         t_step = time.perf_counter()
         view = messages
         if history_window is not None and len(messages) > 2 + 2 * history_window:
-            # system + question + the last N assistant/observation pairs
             view = messages[:2] + messages[len(messages) - 2 * history_window:]
         prompt = _render(view)
         res = llm.chat(view, stop=["\nObservation:", "Observation:"])

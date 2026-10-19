@@ -1,13 +1,3 @@
-"""API for the web UI (separate frontend repository): runs the agent live.
-
-    agentic-ui                         # API + the built frontend, on http://localhost:8000
-    agentic-ui --site PATH             # serve the frontend build from another folder
-    agentic-ui --no-browser            # API only use, e.g. with the frontend's `npm run dev`
-
-By default the built site is taken from the frontend repository next to this one
-(../frontend/docs). Without it, only the API is served.
-"""
-
 import argparse
 import json
 import queue
@@ -26,9 +16,9 @@ from fastapi.staticfiles import StaticFiles
 from . import llm_from_config, run_meta
 from .agent import run_task
 
-ROOT = Path(__file__).resolve().parents[2]  # repository root
+ROOT = Path(__file__).resolve().parents[2]
 CONFIGS = ROOT / "configs"
-DEFAULT_SITE = ROOT.parent / "frontend" / "docs"  # the frontend repository, next to this one: npm run build
+DEFAULT_SITE = ROOT.parent / "frontend" / "docs"
 ASK_TRACES = ROOT / "traces" / "ask"
 
 app = FastAPI(title="agentic-profiling")
@@ -87,7 +77,6 @@ def ask(question: str = Query(..., min_length=3, max_length=500),
 
 
 def mount_site(site: Path) -> bool:
-    """Serve the built frontend at /, or a short help message if it is missing."""
     if (site / "index.html").exists():
         app.mount("/", StaticFiles(directory=site, html=True), name="site")
         return True

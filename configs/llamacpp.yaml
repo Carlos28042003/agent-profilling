@@ -1,7 +1,5 @@
-# llama.cpp server (Weeks 4-5), prompt caching ON (llama.cpp default).
-# Start the server first: scripts/serve_llamacpp.ps1   (same GGUF file as Ollama's llama3.2:3b)
 base_url: http://localhost:8080/v1
-model: llama3.2:3b   # llama-server serves one model and ignores this name
+model: llama3.2:3b
 temperature: 0.0
 seed: 0
 max_tokens: 512

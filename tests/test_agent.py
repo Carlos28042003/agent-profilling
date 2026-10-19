@@ -4,7 +4,6 @@ from agentic_profiling.llm import LLMResult
 
 
 class FakeLLM:
-    """Returns scripted replies and records the prompts it receives."""
 
     def __init__(self, replies: list[str]):
         self.replies = list(replies)
@@ -49,7 +48,6 @@ def test_tool_then_final_answer(monkeypatch):
 
 
 def test_history_is_append_only(monkeypatch):
-    """Each step's prompt is an exact prefix of the next one (the basis of prefix caching)."""
     _fake_search(monkeypatch)
     llm = FakeLLM([
         "Thought: a\nAction: search\nAction Input: x",

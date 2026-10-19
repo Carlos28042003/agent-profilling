@@ -39,8 +39,6 @@ cd C:\dev\agentic-profiling\backend
 uv sync                                       # creates .venv with exact versions
 ollama pull llama3.2:3b
 ollama create llama3.2:3b-ctx8k -f configs/ollama/llama3.2-ctx8k.Modelfile
-ollama pull qwen2.5:3b                        # optional, model comparisons
-ollama create qwen2.5:3b-ctx8k -f configs/ollama/qwen2.5-ctx8k.Modelfile
 uv run pytest                                 # expect: 22 passed
 ```
 

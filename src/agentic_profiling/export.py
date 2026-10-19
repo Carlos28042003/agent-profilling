@@ -1,12 +1,3 @@
-"""Export an experiment to results/<name>.json and rebuild results/data.json.
-
-    agentic-export week1 traces/week1/* --title "..." --description "..."
-    agentic-export --page-only        # only rebuild results/data.json from results/*.json
-
-results/data.json holds every experiment and is what the frontend repository shows:
-there, `npm run sync-data` copies it and `npm run build` rebuilds the site.
-"""
-
 import argparse
 import json
 import sys
@@ -20,16 +11,15 @@ from .analyze import stats as workload_stats
 from .compare import compare
 from .summarize import load_steps, summarize
 
-ROOT = Path(__file__).resolve().parents[2]  # repository root
+ROOT = Path(__file__).resolve().parents[2]
 RESULTS = ROOT / "results"
-SITE_DATA = RESULTS / "data.json"  # all experiments, for the frontend repository
+SITE_DATA = RESULTS / "data.json"
 
 STEP_FIELDS = ["index", "tool", "llm_ttft_s", "llm_generation_s", "tool_s",
                "prompt_tokens", "completion_tokens", "cached_tokens", "truncated"]
 
 
 def _example(run_dirs: list[Path], steps: pd.DataFrame, choice: str | None) -> dict:
-    """One task for the step-by-step chart: the chosen one, or the longest correct one."""
     if choice:
         run, task_id = choice.split("/")
     else:
@@ -50,7 +40,6 @@ def _example(run_dirs: list[Path], steps: pd.DataFrame, choice: str | None) -> d
 
 
 def _characterization(run_dirs: list[Path]) -> dict:
-    """Per-run series for the page's Week 3 charts (context growth, reuse, latency, time split)."""
     tasks, steps = load_full(run_dirs)
     growth, reuse, latency = {}, {}, {}
     for run, s in steps.groupby("run"):
@@ -92,7 +81,8 @@ def export(name: str, run_dirs: list[Path], title: str, description: str, exampl
         "description": description,
         "exported": date.today().isoformat(),
         "runs": json.loads(summary.to_json(orient="records")),
-        "per_task": {task: {run: int(v) for run, v in row.items()} for task, row in per_task.iterrows()},
+        "per_task": {task: {run: int(v) for run, v in row.items() if pd.notna(v)}
+                     for task, row in per_task.iterrows()},
         "example": _example(run_dirs, steps, example),
         **_characterization(run_dirs),
     }

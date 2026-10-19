@@ -1,8 +1,3 @@
-"""Summary of one or more trace directories: accuracy, steps, time and repeated prefix.
-
-    agentic-summary traces/week1/llama-run1 traces/week1/llama-run2 ...
-"""
-
 import argparse
 import json
 import sys
@@ -16,16 +11,13 @@ TRUNCATION_TOKENS_PER_CHAR = 0.12
 def load_steps(run_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     tasks, steps = [], []
     for f in sorted(run_dir.glob("*.json")):
-        if f.name.startswith("run_"):  # run_meta*, run_summary*
+        if f.name.startswith("run_"):
             continue
         t = json.loads(f.read_text(encoding="utf-8"))
         tasks.append({"run": run_dir.name, "task_id": t["task_id"], "correct": t["correct"],
                       "finished": t["finished"], "n_steps": len(t["steps"]), "total_s": t["total_s"]})
         prev = None
         for s in t["steps"]:
-            # The server truncated the context: the prompt grew in text but barely in tokens.
-            # Appended text yields >= ~0.18 tokens/char (plain English); below 0.12 means
-            # the start of the conversation was cut.
             truncated = bool(prev is not None and s["prompt_tokens"] and prev["prompt_tokens"]
                              and s["prompt_chars"] > prev["prompt_chars"]
                              and (s["prompt_tokens"] - prev["prompt_tokens"])
@@ -36,7 +28,7 @@ def load_steps(run_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def summarize(tasks: pd.DataFrame, steps: pd.DataFrame) -> pd.DataFrame:
-    later = steps[steps["index"] > 0]  # step 0 has no previous step to reuse
+    later = steps[steps["index"] > 0]
     by_run = steps.groupby("run")
     llm, tool, total = by_run["llm_total_s"].sum(), by_run["tool_s"].sum(), by_run["step_total_s"].sum()
     out = pd.DataFrame({
@@ -53,7 +45,7 @@ def summarize(tasks: pd.DataFrame, steps: pd.DataFrame) -> pd.DataFrame:
         "truncated_steps": by_run["truncated"].sum(),
         "prefix_reuse_%": 100 * later.groupby("run")["shared_prefix_chars"].sum()
         / later.groupby("run")["prompt_chars"].sum(),
-        "cached_tok_%": 100 * later.groupby("run")["cached_tokens"].sum()
+        "cached_tok_%": 100 * later.groupby("run")["cached_tokens"].sum(min_count=1)
         / later.groupby("run")["prompt_tokens"].sum(),
     })
     return out.round(2)

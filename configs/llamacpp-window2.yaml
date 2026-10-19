@@ -1,0 +1,9 @@
+base_url: http://localhost:8080/v1
+model: llama3.2:3b
+temperature: 0.0
+seed: 0
+max_tokens: 512
+max_steps: 8
+history_window: 2
+extra_body:
+  cache_prompt: true

@@ -1,4 +1,0 @@
-# Development
-pytest
-ruff
-ipykernel       # notebooks to explore traces
