@@ -16,9 +16,10 @@ def load_steps(run_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
         t = json.loads(f.read_text(encoding="utf-8"))
         tasks.append({"run": run_dir.name, "task_id": t["task_id"], "correct": t["correct"],
                       "finished": t["finished"], "n_steps": len(t["steps"]), "total_s": t["total_s"]})
+        windowed = bool(t.get("meta", {}).get("config", {}).get("history_window"))
         prev = None
         for s in t["steps"]:
-            truncated = bool(prev is not None and s["prompt_tokens"] and prev["prompt_tokens"]
+            truncated = bool(not windowed and prev is not None and s["prompt_tokens"] and prev["prompt_tokens"]
                              and s["prompt_chars"] > prev["prompt_chars"]
                              and (s["prompt_tokens"] - prev["prompt_tokens"])
                              < TRUNCATION_TOKENS_PER_CHAR * (s["prompt_chars"] - prev["prompt_chars"]))

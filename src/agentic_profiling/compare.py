@@ -11,11 +11,12 @@ from .analyze import INK_2, SERIES, SURFACE, load
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def _wall(run_dir: Path) -> tuple[float | None, int | None]:
+def _wall(run_dir: Path) -> tuple[float | None, int, int | None]:
     summaries = [json.loads(f.read_text(encoding="utf-8")) for f in run_dir.glob("run_summary_*.json")]
     if not summaries:
-        return None, None
-    return sum(s["wall_s"] for s in summaries), summaries[-1]["concurrency"]
+        return None, 0, None
+    return (sum(s["wall_s"] for s in summaries), sum(s["tasks_run"] for s in summaries),
+            summaries[-1]["concurrency"])
 
 
 def compare(run_dirs: list[Path]) -> pd.DataFrame:
@@ -26,7 +27,8 @@ def compare(run_dirs: list[Path]) -> pd.DataFrame:
         timings = s["server_timings"].dropna() if "server_timings" in s else pd.Series(dtype=object)
         prefill = sum(x.get("prompt_n", 0) for x in timings) if len(timings) else None
         prefill_ms = sum(x.get("prompt_ms", 0) for x in timings) if len(timings) else None
-        wall, conc = _wall(d)
+        wall, timed, conc = _wall(d)
+        timed_share = timed / len(t) if len(t) else 0
         rows.append({
             "run": d.name,
             "concurrency": conc,
@@ -38,8 +40,8 @@ def compare(run_dirs: list[Path]) -> pd.DataFrame:
             "ttft_p95_s": s["llm_ttft_s"].quantile(0.95),
             "task_p50_s": t["total_s"].median(),
             "task_p95_s": t["total_s"].quantile(0.95),
-            "tasks_per_min": 60 * len(t) / wall if wall else None,
-            "gen_tokens_per_s": s["completion_tokens"].sum() / wall if wall else None,
+            "tasks_per_min": 60 * timed / wall if wall else None,
+            "gen_tokens_per_s": timed_share * s["completion_tokens"].sum() / wall if wall else None,
             "prompt_tokens": int(s["prompt_tokens"].sum()),
             "prefill_tokens_computed": prefill,
             "prefill_s_server": prefill_ms / 1000 if prefill_ms is not None else None,
